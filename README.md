@@ -51,7 +51,7 @@
     ·
     <a href="https://github.com/Infineon/makers-devops/issues/new?labels=bug&template=bug_report_template.md">Report Bug</a>
     ·
-    <a href="https://github.com/Infineon/makers-devops/issues/new?labels=enhancement&template=issue_template.md">Request Feature</a>
+    <a href="https://github.com/Infineon/makers-devops/issues/new?labels=enhancement&template=feature_request_template.md">Request Feature</a>
   </p>
 </div>
 
