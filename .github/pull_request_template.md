@@ -1,6 +1,6 @@
 #### Description of Change
 
-Thank you for your contribution. Please provide a description of the pull request and comlpete the steps listed in the checklist below.
+Thank you for your contribution. Please provide a description of the pull request and complete the steps listed in the checklist below.
 In doubt, please refer to the contributors guide: [CONTRIBUTING.md](https://github.com/bargfred/cicdTemplate/blob/main/README.md#contributing). Please also be aware of the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 Description:
