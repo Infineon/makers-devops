@@ -10,12 +10,28 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
+[![Issues][issues-shield]][issues-url]
+[![Commits][commit-shield]][commit-url]
+[![Commits2][commit2-shield]][commit2-url]
+[![Pull requests][pull-request-shield]][pull-request-url]
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
+[![Documentation status][doc-status-shield]][doc-status-url]
 [![MIT License][license-shield]][license-url]
+[![Contributor Covenant][contributor-covenant-shield]][contributor-covenant-url]
+[![Pre-commit used][pre-commit-shield]][pre-commit-url]
 
+
+<!-- [![CI](https://img.shields.io/github.com/Infineon/makers-devops/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Infineon/makers-devops/actions/workflows/build.yml)
+
+[![CI](https://img.shields.io/github.com/Infineon/makers-devops/actions/workflows/build.yml/badge.svg?branch=testpush)](https://github.com/Infineon/makers-devops/actions/workflows/build.yml)
+
+[![Build Status](https://img.shields.io/github.com/Infineon/makers-devops/actions?style=plastic)](https://github.com/Infineon/makers-devops/actions)
+
+[![Build Status](https://github.com/Infineon/makers-devops/workflows/CI/badge.svg)](https://github.com/Infineon/makers-devops/actions)
+
+[![CI](https://img.shields.io/github.com/Infineon/makers-devops/actions/workflows/build.yml/badge.svg?branch=testpush)](https://github.com/Infineon/makers-devops/actions) -->
 
 
 <!-- PROJECT LOGO -->
@@ -183,11 +199,12 @@ Don't forget to give the project a star! Thanks again!
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+
 <!-- CONTRIBUTORS -->
 ## Contributors
 
 <a href="https://github.com/Infineon/makers-devops/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Infineon/makers-devops" alt="contrib.rocks image" />
+  <img src="https://contrib.rocks/image?repo=Infineon/makers-devops" alt="contrib.rocks image" width="50" />
 </a>
 
 
@@ -215,10 +232,13 @@ Project Link: [https://github.com/Infineon/makers-devops](https://github.com/Inf
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
 * [![ThrowTheSwitch/Unity][Unity-logo]][Unity-url]
+* [![Arduino][Arduino-logo]][Arduino-url]
+* [![GCC][GCC-logo]][GCC-url]
+* [![LLVM][LLVM-logo]][LLVM-url]
+<!-- * [![MicroPython][MPY-logo]][MPY-url]
+* [![ModusToolBox][MTB-logo]][MTB-url]
+* [![Python][Python-logo]][Python-url] -->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -226,35 +246,39 @@ Project Link: [https://github.com/Infineon/makers-devops](https://github.com/Inf
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[commit-shield]: https://img.shields.io/github/commit-activity/w/Infineon/makers-devops/main?style=plastic
+[commit-url]: https://github.com/Infineon/makers-devops/commits
+[commit2-shield]: https://img.shields.io/github/commit-activity/w/Infineon/makers-devops/main?style=plastic
+[commit2-url]: https://github.com/Infineon/makers-devops/tree/main
+
 [contributors-shield]: https://img.shields.io/github/contributors/Infineon/makers-devops.svg?style=plastic
 [contributors-url]: https://github.com/Infineon/makers-devops/graphs/contributors
+
+[contributor-covenant-shield]: https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg
+[contributor-covenant-url]: https://github.com/Infineon/makers-devops/blob/main/CODE_OF_CONDUCT.md
+
+[doc-status-shield]: https://readthedocs.org/projects/xmc-arduino/badge/?version=latest
+[doc-status-url]: https://xmc-arduino.readthedocs.io/en/latest/?badge=latest
+
 [forks-shield]: https://img.shields.io/github/forks/Infineon/makers-devops.svg?style=plastic
 [forks-url]: https://github.com/Infineon/makers-devops/network/members
-[stars-shield]: https://img.shields.io/github/stars/Infineon/makers-devops.svg?style=plastic
-[stars-url]: https://github.com/Infineon/makers-devops/stargazers
+
 [issues-shield]: https://img.shields.io/github/issues/Infineon/makers-devops.svg?style=plastic
 [issues-url]: https://github.com/Infineon/makers-devops/issues
+
 [license-shield]: https://img.shields.io/github/license/Infineon/makers-devops.svg?style=plastic
-[license-url]: https://github.com/Infineon/makers-devops/blob/master/LICENSE
+[license-url]: https://github.com/Infineon/makers-devops/blob/main/LICENSE
 
-[product-screenshot]: images/screenshot.png
+[pre-commit-shield]: https://img.shields.io/badge/pre--commit-enabled-brightgreen.svg?logo=pre-commit
+[pre-commit-url]: https://github.com/pre-commit/pre-commit
 
-<!-- [Next.js]: https://img.shields.io/badge/next.js-000000?style=plastic&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=plastic&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=plastic&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=plastic&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=plastic&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=plastic&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=plastic&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=plastic&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com -->
+[pull-request-shield]: https://img.shields.io/github/issues-pr-raw/Infineon/makers-devops.svg?style=plastic
+[pull-request-url]: https://github.com/Infineon/makers-devops/pulls
+
+[stars-shield]: https://img.shields.io/github/stars/Infineon/makers-devops.svg?style=plastic
+[stars-url]: https://github.com/Infineon/makers-devops/stargazers
+
+<!-- [product-screenshot]: images/screenshot.png -->
 
 
 [Unity-logo]: https://img.shields.io/badge/ThrowTheSwitch_%2f_Unity-white?style=plastic
