@@ -26,11 +26,9 @@
 <!-- [![CI](https://img.shields.io/github.com/Infineon/makers-devops/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Infineon/makers-devops/actions/workflows/build.yml)
 
 [![CI](https://img.shields.io/github.com/Infineon/makers-devops/actions/workflows/build.yml/badge.svg?branch=testpush)](https://github.com/Infineon/makers-devops/actions/workflows/build.yml)
-
 [![Build Status](https://img.shields.io/github.com/Infineon/makers-devops/actions?style=plastic)](https://github.com/Infineon/makers-devops/actions)
 
 [![Build Status](https://github.com/Infineon/makers-devops/workflows/CI/badge.svg)](https://github.com/Infineon/makers-devops/actions)
-
 [![CI](https://img.shields.io/github.com/Infineon/makers-devops/actions/workflows/build.yml/badge.svg?branch=testpush)](https://github.com/Infineon/makers-devops/actions) -->
 
 
