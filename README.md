@@ -26,11 +26,9 @@
 <!-- [![CI](https://img.shields.io/github.com/Infineon/makers-devops/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Infineon/makers-devops/actions/workflows/build.yml)
 
 [![CI](https://img.shields.io/github.com/Infineon/makers-devops/actions/workflows/build.yml/badge.svg?branch=testpush)](https://github.com/Infineon/makers-devops/actions/workflows/build.yml)
-
 [![Build Status](https://img.shields.io/github.com/Infineon/makers-devops/actions?style=plastic)](https://github.com/Infineon/makers-devops/actions)
 
 [![Build Status](https://github.com/Infineon/makers-devops/workflows/CI/badge.svg)](https://github.com/Infineon/makers-devops/actions)
-
 [![CI](https://img.shields.io/github.com/Infineon/makers-devops/actions/workflows/build.yml/badge.svg?branch=testpush)](https://github.com/Infineon/makers-devops/actions) -->
 
 
@@ -281,6 +279,9 @@ Project Link: [https://github.com/Infineon/makers-devops](https://github.com/Inf
 <!-- [product-screenshot]: images/screenshot.png -->
 
 
+[Unity-logo]: https://img.shields.io/badge/ThrowTheSwitch_%2f_Unity-white?style=plastic
+[Unity-url]: https://www.throwtheswitch.org/unity
+
 [Arduino-logo]: https://img.shields.io/badge/Arduino-white?style=plastic&logo=arduino&logoColor=00878F
 [Arduino-url]: https://www.arduino.org/
 
@@ -290,14 +291,11 @@ Project Link: [https://github.com/Infineon/makers-devops](https://github.com/Inf
 [LLVM-logo]: https://img.shields.io/badge/LLVM-white?style=plastic&logo=llvm&logoColor=262D3A
 [LLVM-url]: https://www.llvm.org/
 
-[MPY-logo]: https://img.shields.io/badge/MicroPython-white?style=plastic&logo=micropython&logoColor=262D3A
+<!-- [MPY-logo]: https://img.shields.io/badge/MicroPython-white?style=plastic&logo=micropython&logoColor=262D3A
 [MPY-url]: https://www.micropython.org/
 
 [MTB-logo]: https://img.shields.io/badge/ModusToolBox-white?style=plastic
 [MTB-url]: https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/
 
 [Python-logo]: https://img.shields.io/badge/Python-white?style=plastic&logo=python&logoColor=3776AB
-[Python-url]: https://www.python.org/
-
-[Unity-logo]: https://img.shields.io/badge/ThrowTheSwitch_%2f_Unity-white?style=plastic
-[Unity-url]: https://www.throwtheswitch.org/unity
+[Python-url]: https://www.python.org/ -->
