@@ -35,15 +35,14 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <!-- <a href="https://github.com/Infineon/makers-devops">
+  <a href="https://github.com/Infineon/makers-devops">
     <img src="https://img.shields.io/badge/Arduino-white?style=plastic&logo=arduino&logoColor=00878F" alt="Logo" width="200">
-  </a> -->
+  </a>
 
-<h2 align="center">Makers-devops</h2>
+<h3 align="center">Makers-devops</h3>
 
   <p align="center">
     Makers' devops related template repository, i.e. workflows, special files, tool configs, ... .
-    <br />
     <br />
     <a href="https://github.com/Infineon/makers-devops"><strong>Explore the docs »</strong></a>
     <br />
@@ -53,7 +52,6 @@
     <a href="https://github.com/Infineon/makers-devops/issues/new?labels=bug&template=bug_report_template.md">Report Bug</a>
     ·
     <a href="https://github.com/Infineon/makers-devops/issues/new?labels=enhancement&template=feature_request_template.md">Request Feature</a>
-   <br />
   </p>
 </div>
 
@@ -107,13 +105,13 @@
 * [![Svelte][Svelte.dev]][Svelte-url]
 * [![Laravel][Laravel.com]][Laravel-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+* [![JQuery][JQuery.com]][JQuery-url] -->
 *
 * [![ThrowTheSwitch/Unity][Unity-logo]][Unity-url]
 * [![Arduino][Arduino-logo]][Arduino-url]
 * [![GCC][GCC-logo]][GCC-url]
 * [![LLVM][LLVM-logo]][LLVM-url]
-* [![MicroPython][MPY-logo]][MPY-url]
+<!-- * [![MicroPython][MPY-logo]][MPY-url]
 * [![ModusToolBox][MTB-logo]][MTB-url]
 * [![Python][Python-logo]][Python-url] -->
 
@@ -232,10 +230,10 @@ Project Link: [https://github.com/Infineon/makers-devops](https://github.com/Inf
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-<!-- * [![ThrowTheSwitch/Unity][Unity-logo]][Unity-url]
+* [![ThrowTheSwitch/Unity][Unity-logo]][Unity-url]
 * [![Arduino][Arduino-logo]][Arduino-url]
 * [![GCC][GCC-logo]][GCC-url]
-* [![LLVM][LLVM-logo]][LLVM-url] -->
+* [![LLVM][LLVM-logo]][LLVM-url]
 <!-- * [![MicroPython][MPY-logo]][MPY-url]
 * [![ModusToolBox][MTB-logo]][MTB-url]
 * [![Python][Python-logo]][Python-url] -->
