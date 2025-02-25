@@ -6,6 +6,7 @@ misc-*
 cert-*,
 readability-*,
 clang-analyzer-*,
+-modernize-deprecated-headers,
 -performance-unnecessary-value-param,
 -modernize-use-trailing-return-type,
 -google-runtime-references,
