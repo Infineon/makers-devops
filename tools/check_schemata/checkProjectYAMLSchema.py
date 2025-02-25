@@ -19,7 +19,6 @@ if not importPath in sys.path:
 from check_schemata.project_yaml_schema import projectYAMLSchema
 
 
-@staticmethod
 def checkProjectYAMLSchema(yml):
     schema = Schema(projectYAMLSchema)
 
