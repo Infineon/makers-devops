@@ -7,7 +7,7 @@ echo "executing $0 $* ..."
 usage() {
   echo "Usage: $0 :" 1>&2;
   echo "          [-i] <Edit in-place.>  [-n | --dry-run] <Do not make any changes.>  [--fcolor-diagnostics] <Coloured output.>  [--files] <File list.>  [--file-prefix] <File_prefix>  [-o | --output-dir] <output directory>" 1>&2;
-  echo "          [--output-replacements-xml] <Replacement XML.>  [ --sort-includes] <Sort includes.>  [--style] <Style orconfig file.>  [--use-shell-color] <Use color in terminal.>  [--verbose] <Show list of processed files.>  [ --Wno-error] <Do not error out for named warnings.>  [--Werror]  <Upgrade warnings to errors.> " 1>&2;
+  echo "          [--output-replacements-xml] <Replacement XML.>  [ --sort-includes] <Sort includes.>  [--style] <Style or config file.>  [--use-shell-color] <Use color in terminal.>  [--verbose] <Show list of processed files.>  [ --Wno-error] <Do not error out for named warnings.>  [--Werror]  <Upgrade warnings to errors.> " 1>&2;
   exit 1;
 }
 
