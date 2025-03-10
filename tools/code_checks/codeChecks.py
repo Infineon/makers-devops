@@ -2,37 +2,35 @@
 
 # python3 codeChecks.py
 
-
 import argparse
 import subprocess
 import sys
-
 
 sys.path.insert(1, "tools")
 
 from project_yaml.readProjectYAML import readProjectYAML
 
-
 def parseArgs():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--getAllChecks", action="store_true", help="getAllChecks help")
-    parser.add_argument("--runAllChecks", action="store_true", help="runAllChecks help")
-    parser.add_argument("--runCheck", type=str, help="runCheck help")
+    parser.add_argument("--getAllChecks", action="store_true", help="Get all checks help")
+    parser.add_argument("--runAllChecks", action="store_true", help="Run all checks help")
+    parser.add_argument("--runCheck", type=str, help="Run a specific check help")
+    parser.add_argument("--projectYAML", type=str, required=True, help="Path to the project YAML file")
+    parser.add_argument("--userYAML", type=str, required=True, help="Path to the user YAML file")
 
     args = parser.parse_args()
 
     return args
 
-
-def runCheck(checkType=None, check=None):
+def runCheck(projectYAML, checkType=None, check=None):
     returnCode = 0
 
-    if checkType == None:
+    if checkType is None:
         print(f"ERROR : Check type 'None' is not valid !")
         returnCode = 1
 
-    elif check == None:
+    elif check is None:
         print(f"ERROR : Check 'None' is not valid !")
         returnCode = 1
 
@@ -56,7 +54,6 @@ def runCheck(checkType=None, check=None):
         else:
             paramList = projectYAML[checkType][check]["command"].split()
             paramList.insert(1, f"--file-prefix={check}")
-            # print(f'cmd : {paramList}')
             returnCode |= subprocess.run(paramList).returncode
 
     if returnCode == 2:
@@ -66,13 +63,11 @@ def runCheck(checkType=None, check=None):
 
     return returnCode
 
-
 if __name__ == "__main__":
-
     returnCode = 0
     args = parseArgs()
 
-    (projectYAML, userYAML) = readProjectYAML("config/project.yml", "config/user.yml")
+    (projectYAML, userYAML) = readProjectYAML(args.projectYAML, args.userYAML)
 
     if args.runAllChecks:
         for checkType, checkTypeList in userYAML.items():
@@ -88,7 +83,7 @@ if __name__ == "__main__":
                         )
                         returnCode = 1
                     else:
-                        returnCode |= runCheck(checkType, check)
+                        returnCode |= runCheck(projectYAML, checkType, check)
 
     elif args.runCheck:
         check = args.runCheck
@@ -99,7 +94,7 @@ if __name__ == "__main__":
                 type = checkType
                 break
 
-        returnCode |= runCheck(type, check)
+        returnCode |= runCheck(projectYAML, type, check)
 
     elif args.getAllChecks:
         allChecks = 'echo "checks=['
