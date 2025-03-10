@@ -44,7 +44,7 @@ max_configs="--max-configs=50"
 output_dir="results/cppcheck"
 std="--std=c++20"
 suppress=
-suppress_default="--suppress=misra-c2012-2.5 --suppress=missingIncludeSystem"
+suppress_default="--suppress=misra-c2012-2.5 --suppress=missingInclude"
 suppressions_list=
 unbuffer=
 use_shell_color=false
