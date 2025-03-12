@@ -130,9 +130,6 @@ returnValue=${PIPESTATUS[0]}
 
 echo "" | tee -a $output_dir/$file_prefix.log
 
-python3 ./tools/code_checks/merge_clang_tidy_cppcheck.py --logDir=$output_dir/../../clang-tidy/check-clang-tidy/ --xmlPath=$output_dir/$file_prefix-errors.xml 
-cppcheck-htmlreport --file=$output_dir/$file_prefix-errors.xml --title=CPPCheck --report-dir=$output_dir/html-report --source-dir=. 2>&1 | tee -a $output_dir/$file_prefix.log
-
 chown -R --reference=`dirname $*` $output_dir
 
 echo "$0 done."
