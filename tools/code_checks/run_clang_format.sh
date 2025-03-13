@@ -24,6 +24,7 @@ fi
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
 
+current_script_dir="$(dirname "$(realpath "$0")")"
 
 dry_run=
 edit_in_place="-i"
@@ -33,7 +34,7 @@ file_prefix="clang-format"
 output_dir="_results/clang-format"
 output_replacements_xml=
 sort_includes="--sort-includes"
-style="-style=file:"./config/clang-format/.clang-format""
+style="-style=file:"$current_script_dir/../../configs/clang-format/.clang-format""
 unbuffer=
 use_shell_color=false
 verbose="--verbose"

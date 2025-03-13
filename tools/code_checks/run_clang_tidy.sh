@@ -26,9 +26,10 @@ fi
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
 
+current_script_dir="$(dirname "$(realpath "$0")")"
 
 checks=
-config_file="--config-file=./config/clang-tidy/.clang-tidy"
+config_file="--config-file=$current_script_dir/../../configs/clang-tidy/.clang-tidy"
 excludes=
 export_fixes=
 extra_arg=
