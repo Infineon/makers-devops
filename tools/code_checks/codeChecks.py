@@ -5,23 +5,35 @@
 import argparse
 import subprocess
 import sys
+import os
 
-sys.path.insert(1, "tools")
+tools_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(1, tools_path + "/..")
 
 from project_yaml.readProjectYAML import readProjectYAML
+
 
 def parseArgs():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--getAllChecks", action="store_true", help="Get all checks help")
-    parser.add_argument("--runAllChecks", action="store_true", help="Run all checks help")
+    parser.add_argument(
+        "--getAllChecks", action="store_true", help="Get all checks help"
+    )
+    parser.add_argument(
+        "--runAllChecks", action="store_true", help="Run all checks help"
+    )
     parser.add_argument("--runCheck", type=str, help="Run a specific check help")
-    parser.add_argument("--projectYAML", type=str, required=True, help="Path to the project YAML file")
-    parser.add_argument("--userYAML", type=str, required=True, help="Path to the user YAML file")
+    parser.add_argument(
+        "--projectYAML", type=str, required=True, help="Path to the project YAML file"
+    )
+    parser.add_argument(
+        "--userYAML", type=str, required=True, help="Path to the user YAML file"
+    )
 
     args = parser.parse_args()
 
     return args
+
 
 def runCheck(projectYAML, checkType=None, check=None):
     returnCode = 0
@@ -63,11 +75,14 @@ def runCheck(projectYAML, checkType=None, check=None):
 
     return returnCode
 
+
 if __name__ == "__main__":
     returnCode = 0
     args = parseArgs()
 
-    (projectYAML, userYAML) = readProjectYAML(args.projectYAML, args.userYAML)
+    (projectYAML, userYAML) = readProjectYAML(
+        os.getcwd() + "/" + args.projectYAML, os.getcwd() + "/" + args.userYAML
+    )
 
     if args.runAllChecks:
         for checkType, checkTypeList in userYAML.items():

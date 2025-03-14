@@ -8,7 +8,6 @@ import subprocess
 import sys
 
 
-
 sys.path.insert(1, "./src/python")
 
 from project_yaml.readProjectYAML import readProjectYAML
@@ -17,9 +16,9 @@ from project_yaml.readProjectYAML import readProjectYAML
 def parseArgs():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--getAllChecks', action='store_true',   help='getAllChecks help')
-    parser.add_argument('--runAllChecks', action='store_true',   help='runAllChecks help')
-    parser.add_argument('--runCheck',     type = str,            help='runCheck help')
+    parser.add_argument("--getAllChecks", action="store_true", help="getAllChecks help")
+    parser.add_argument("--runAllChecks", action="store_true", help="runAllChecks help")
+    parser.add_argument("--runCheck", type=str, help="runCheck help")
 
     args = parser.parse_args()
 
@@ -37,20 +36,28 @@ def runCheck(checkType=None, check=None):
         print(f"ERROR : Check 'None' is not valid !")
         returnCode = 1
 
-    elif checkType == 'build':
-        returnCode |= subprocess.run(["make", "run-build-target", f"FQBN={projectYAML[checkType][check]['fqbn']}", f"TARGET={projectYAML[checkType][check]['target']}"]).returncode
+    elif checkType == "build":
+        returnCode |= subprocess.run(
+            [
+                "make",
+                "run-build-target",
+                f"FQBN={projectYAML[checkType][check]['fqbn']}",
+                f"TARGET={projectYAML[checkType][check]['target']}",
+            ]
+        ).returncode
 
-    elif checkType == 'check':
-        if 'command' not in projectYAML[checkType][check]:
-            print(f"ERROR : Option 'command' not found in project YAML for {checkType} / {check} !")
+    elif checkType == "check":
+        if "command" not in projectYAML[checkType][check]:
+            print(
+                f"ERROR : Option 'command' not found in project YAML for {checkType} / {check} !"
+            )
             returnCode = 1
-    
+
         else:
-            paramList=projectYAML[checkType][check]['command'].split()
-            paramList.insert(1, f'--file-prefix={check}')
+            paramList = projectYAML[checkType][check]["command"].split()
+            paramList.insert(1, f"--file-prefix={check}")
             # print(f'cmd : {paramList}')
             returnCode |= subprocess.run(paramList).returncode
-
 
     if returnCode == 2:
         print(f"ERROR : Running check '{check}' failed due to failed code checks !")
@@ -63,17 +70,15 @@ def runCheck(checkType=None, check=None):
 if __name__ == "__main__":
 
     returnCode = 0
-    args       = parseArgs()
+    args = parseArgs()
 
-    (projectYAML, userYAML) = readProjectYAML(
-        "./project.yml", "./user.yml"
-    )
+    (projectYAML, userYAML) = readProjectYAML("./project.yml", "./user.yml")
 
     # print(f"projectYAML : {projectYAML}\n")
     # print(f"userYAML : {userYAML}\n")
 
     if args.runAllChecks:
-        for (checkType, checkTypeList) in userYAML.items():
+        for checkType, checkTypeList in userYAML.items():
             if checkType not in projectYAML:
                 print(f"ERROR : Check type '{checkType}' not found in project YAML !")
                 returnCode = 1
@@ -81,17 +86,18 @@ if __name__ == "__main__":
             else:
                 for check in checkTypeList:
                     if check not in projectYAML[checkType]:
-                        print(f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !")
+                        print(
+                            f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !"
+                        )
                         returnCode = 1
                     else:
                         returnCode |= runCheck(checkType, check)
 
-
     elif args.runCheck:
         check = args.runCheck
-        type  = None
+        type = None
 
-        for (checkType, checkTypeList) in userYAML.items():
+        for checkType, checkTypeList in userYAML.items():
             if check in checkTypeList:
                 type = checkType
                 break
@@ -101,14 +107,16 @@ if __name__ == "__main__":
     elif args.getAllChecks:
         allChecks = 'echo "checks=['
 
-        for (checkType, checkTypeList) in userYAML.items():
+        for checkType, checkTypeList in userYAML.items():
             if checkType not in projectYAML:
                 print(f"ERROR : Check type '{checkType}' not found in project YAML !")
                 returnCode = 1
 
             for check in checkTypeList:
                 if check not in projectYAML[checkType]:
-                    print(f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !")
+                    print(
+                        f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !"
+                    )
                     returnCode = 1
                 else:
                     allChecks += f'\\"{check}\\",'

@@ -25,9 +25,10 @@ fi
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
 
+current_script_dir="$(dirname "$(realpath "$0")")"
 
 addon=
-addon_default="--addon=config/cppcheck/misra.json --addon=misc"
+addon_default="--addon=$current_script_dir/../../configs/cppcheck/misra.json --addon=misc"
 check_level="--check-level=exhaustive"
 enable=
 enable_default="--enable=information,missingInclude,performance,portability,style,warning"
