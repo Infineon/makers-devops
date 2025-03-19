@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     container:
-      image: docker.io/ifxmakers/makers-docker:push
+      image: docker.io/ifxmakers/makers-docker:latest
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
@@ -59,7 +59,7 @@ jobs:
     needs: setup
 
     container:
-      image: docker.io/ifxmakers/makers-docker:push
+      image: docker.io/ifxmakers/makers-docker:latest
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
@@ -81,7 +81,7 @@ jobs:
           ref: fix-configs-path
           path: makers-devops
 
-      - name: Set execute permissions for all .sh files in a folder
+      - name: Set execute permissions for all .sh files in a folder 
         run: |
           find extras/makers-devops/tools/code_checks/ -name "*.sh" -exec chmod +x {} \;
 
@@ -114,7 +114,7 @@ jobs:
       - setup
 
     container:
-      image: docker.io/ifxmakers/makers-docker:push
+      image: docker.io/ifxmakers/makers-docker:latest
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
