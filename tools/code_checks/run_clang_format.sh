@@ -24,7 +24,6 @@ fi
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
 
-
 dry_run=
 edit_in_place="-i"
 fcolor_diagnostics="--fcolor-diagnostics"
@@ -33,7 +32,7 @@ file_prefix="clang-format"
 output_dir="_results/clang-format"
 output_replacements_xml=
 sort_includes="--sort-includes"
-style="-style=file:"./config/clang-format/.clang-format""
+style="-style=file:"extras/makers-devops/configs/clang-format/.clang-format""
 unbuffer=
 use_shell_color=false
 verbose="--verbose"

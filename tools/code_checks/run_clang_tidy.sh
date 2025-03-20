@@ -26,9 +26,8 @@ fi
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
 
-
 checks=
-config_file="--config-file=./config/clang-tidy/.clang-tidy"
+config_file="--config-file=extras/makers-devops/configs/clang-tidy/.clang-tidy"
 excludes=
 export_fixes=
 extra_arg=
