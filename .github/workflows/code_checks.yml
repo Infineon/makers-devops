@@ -77,7 +77,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Infineon/makers-devops
-          ref: fix-configs-path
           path: makers-devops
 
       - name: Set execute permissions for all .sh files in a folder 
@@ -128,7 +127,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Infineon/makers-devops
-          ref: fix-configs-path
           path: makers-devops
 
       - name: Download cppcheck artifacts
