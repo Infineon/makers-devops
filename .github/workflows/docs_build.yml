@@ -1,0 +1,32 @@
+name: Build docs
+
+### QUICK REFERENCE ###
+
+# Required project structure:
+# docs/
+#   requirements.txt
+#   Makefile
+#   ...
+
+# How to call this workflow from another workflow:
+# name: Build docs
+# on:
+#  ...
+# jobs:
+#  call-workflow:
+#    uses: Infineon/makers-devops/.github/workflows/docs_build.yml@main
+
+on:
+  workflow_call:
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+    - name: Install required Python packages
+      run: pip install -r docs/requirements.txt
+    - name: Build docs from Makefile
+      run: make -C docs/ html
