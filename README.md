@@ -77,6 +77,20 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li>
+      <a href="#How-to-run-Code-checks-locally">How to run Code checks locally</a>
+      <ul>
+        <li><a href="#Add-Repository-as-a-Submodule">Add Repository as a Submodule</a></li>
+        <li><a href="#Configure-Your-Project">Configure Your Project</a></li>
+        <li><a href="#Running-Locally">Running Locally</a></li>
+          <ul>
+            <li><a href="#To-execute-using-Docker-and-Make">To execute using Docker and Make</a></li>
+            <li><a href="#To-execute-without-Docker">To execute without Docker</a></li>
+          </ul>
+        <li><a href="#Running-in-CI-CD">Running in CI CD</a></li>
+        <li><a href="#Generating-Reports">Generating Reports</a></li>
+      </ul>
+    </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -91,10 +105,40 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+This repository provides templates for creating a new project. The following files can be modified and reused:
+1. README.md
+2. SECURITY.md
+3. CODE_OF_CONDUCT.md
+4. CONTRIBUTING.md
+5. LICENSE
+6. templates/RELEASE_NOTES.md
+7. .github/ISSUE_TEMPLATE/bug_report_template.md
+8. .github/ISSUE_TEMPLATE/feature_request_template.md
+
+It also provides a set of scripts and configurations to automate code quality checks and formatting for C/C++ and Python projects. It is designed to be integrated as a submodule in any project and includes workflows for running checks both locally and in GitHub Actions (GA) environments.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Features
+
+1. Reusable Template Files
+   
+2. Scripts to Run Code Quality Checks:
+
+   - cppcheck: Static analysis for C/C++ code.
+   - clang-tidy: Linter and static analysis for C/C++ code.
+   - clang-format: Code formatting for C/C++.
+   - black: Code formatting for Python scripts.
+  
+3. Seamless Integration:
+
+   - Can be added as a submodule to any project.
+   - Supports local execution of code quality checks in development environments.
+   - Includes a GitHub Actions workflow for CI/CD integration.
+
+4. Customizable Checks:
+
+    Project-specific and user-specific configurations using project.yml and user.yml.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -118,8 +162,6 @@
 * [![Python][Python-logo]][Python-url] -->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -153,7 +195,77 @@ This is an example of how to list things you need to use the software and how to
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## How to run Code checks locally
 
+### Add Repository as a Submodule
+
+Include this repository as a submodule in your project using the following command:
+
+```bash
+git submodule add <repo_url> extras/makers-devops
+```
+
+### Configure Your Project
+
+Create the following YAML files in your project to define the tools and checks to run:
+
+- project.yml: Contains project-specific configurations such as tools and commands.
+- user.yml: Optionally define user-specific configurations.
+
+Add new tools and checks in the project.yml under the check: section to extend the configuration.
+
+### Running Locally
+
+#### To execute using Docker and Make
+
+Ensure you have Docker installed to run containerized tools. The repository provides a Makefile to simplify execution of code quality checks. Some common commands include:
+
+- Clean Results:
+```sh
+make clean-results
+```
+
+- Run All Checks:
+```sh
+make run-container-check-all
+```
+
+- Run Specific Tools:
+```sh
+make run-container-cppcheck
+make run-container-clang-tidy-check
+make run-container-clang-tidy-format
+make run-container-black-format
+```
+For more details, refer to the Makefile in the repository.
+
+#### To execute without Docker
+
+Install the following tools locally:
+- python3
+- cppcheck
+- llvm
+- black
+  
+### Running in CI CD
+
+The repository includes a predefined workflow script that can be triggered to run all the defined checks in the GitHub Actions (GA) environment. 
+
+In order to integrate, reference the workflow script from this repository ".github/workflows/code_checks.yml".
+Ensure your project sets the inputs, project-yaml and user-yaml for configuration.
+
+### Generating Reports
+
+After running cppcheck and clang-tidy, you can generate a collective HTML report:
+
+```sh
+make run-container-generate-html-report
+```
+
+The report will be available under the directory
+_results/cppcheck/html-report/index.html
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -163,8 +275,6 @@ Use this space to show useful examples of how a project can be used. Additional 
 _For more examples, please refer to the [Documentation](https://github.com/Infineon/makers-devops/blob/main/README.md)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -177,8 +287,6 @@ _For more examples, please refer to the [Documentation](https://github.com/Infin
 See the [open issues](https://github.com/Infineon/makers-devops/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
