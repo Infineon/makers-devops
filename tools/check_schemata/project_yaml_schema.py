@@ -1,14 +1,15 @@
 from schema import And, Or, Use, Optional
 
 projectYAMLSchema = {
-    "build": {
+    Optional("build"): {
         str: {
             "description": str,
             "target": str,
             "fqbn": str,
         }
     },
-    "check": {
+    
+    Optional("check"): {
         str: {
             "description": str,
             "tool": str,
