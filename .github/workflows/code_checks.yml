@@ -43,7 +43,7 @@ jobs:
       - name: Set strategy matrix
         id: set-matrix
         run: |
-          eval $(python3 makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --getAllChecks)
+          eval $(python3 extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --getAllChecks)
 
       - name: Append Code Checks Output to Summary
         run: |
@@ -79,9 +79,9 @@ jobs:
           repository: Infineon/makers-devops
           path: makers-devops
 
-      - name: Set execute permissions for all .sh files in a folder 
-        run: |
-          find extras/makers-devops/tools/code_checks/ -name "*.sh" -exec chmod +x {} \;
+      # - name: Set execute permissions for all .sh files in a folder 
+        # run: |
+        #   find extras/makers-devops/tools/code_checks/ -name "*.sh" -exec chmod +x {} \;
 
       - name: Run all code checks
         id: run_build
@@ -90,7 +90,8 @@ jobs:
           echo "Workflow has these parameters :"
           echo "matrix.checks   : ${{ matrix.checks }}"
           echo ""
-          python3 makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }}  > output.log
+          # python3
+          extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }}  > output.log
         continue-on-error: true
 
       - name: Archive code check reports
