@@ -1,4 +1,3 @@
-# pip3.exe install pyyaml schema
 
 import os
 import sys
@@ -31,7 +30,7 @@ def checkUserYAMLSchema(yml):
 
 if __name__ == "__main__":
 
-    with open(".//user.yml", "r") as file:
+    with open("config/user.yml", "r") as file:
         userYAML = yaml.safe_load(file)
 
     print(f"userYAML : {userYAML}\n")

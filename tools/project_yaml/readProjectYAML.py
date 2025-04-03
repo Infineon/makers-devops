@@ -1,12 +1,5 @@
-# pip3.exe install pyyaml schema
-
-
-# python.exe src/python/project_yaml/readProjectYAML.py
-
 
 import os
-
-# import pandas as pd
 import sys
 import yaml
 
@@ -23,7 +16,6 @@ from check_schemata.checkProjectYAMLSchema import checkProjectYAMLSchema
 from check_schemata.checkUserYAMLSchema import checkUserYAMLSchema
 
 
-@staticmethod
 def readProjectYAML(project, user):
     with open(project, "r") as file:
         projectYAML = yaml.safe_load(file)
@@ -44,9 +36,8 @@ def readProjectYAML(project, user):
 if __name__ == "__main__":
 
     (projectYAML, userYAML) = readProjectYAML(
-        "./project.yml",
-        "./user.yml",
-        # "src/python/project_yaml/project.yml", "src/python/project_yaml/user.yml"
+        "config/project.yml",
+        "config/user.yml",
     )
 
     exit(0)

@@ -1,4 +1,3 @@
-# pip3.exe install pyyaml schema
 
 import os
 import sys
@@ -31,7 +30,7 @@ def checkProjectYAMLSchema(yml):
 
 if __name__ == "__main__":
 
-    with open("./project.yml", "r") as file:
+    with open("config/project.yml", "r") as file:
         projectYAML = yaml.safe_load(file)
 
     print(f"projectYAML : {projectYAML}\n")
