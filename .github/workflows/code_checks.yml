@@ -1,8 +1,6 @@
 name: Code Quality Checks
 
 on:
-  push:
-  pull_request:
   workflow_call:
     inputs:
       project-yaml:
@@ -110,7 +108,6 @@ jobs:
     if: success() || failure()
     needs:
       - codeChecks
-      - setup
 
     container:
       image: docker.io/ifxmakers/makers-docker:latest
