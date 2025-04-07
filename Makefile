@@ -31,15 +31,11 @@ USERYAML=config/user.yml
 
 pull-container: 
 	docker pull $(REGISTRY)
+	find ./tools/code_checks/ -name "*.sh" -exec chmod +x {} \;
 	
 run-container-check-all: clean-results pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllChecks
-	$(DOCKER) python3 $(CODECHECK) ---projectYAML $(PROJECTYAML) --userYAML $(USERYAML) -runAllChecks
-
-run-container-project-setup-script-with-show-logs: clean-results pull-container
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllChecks
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck check-clang-tidy
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runAllChecks 
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runAllChecks
 
 run-container-cppcheck: pull-container
 	-rm -rf _results/cppcheck/* 
