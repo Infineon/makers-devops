@@ -5,9 +5,6 @@ TARGET ?= test_interrupts_single
 ##############################################################################################################################################################
 CLANGTIDY_OUTPUT=_results/clang-tidy/check-clang-tidy
 CPPCHECK_OUTPUT=_results/cppcheck/check-cppcheck
-clean-results:
-	-rm -rf _results/cppcheck/*  _results/clang-tidy/* _results/build/*
-	-mkdir -p _results/cppcheck _results/clang-tidy _results/build
 
 ##############################################################################################################################################################
 
@@ -33,26 +30,20 @@ pull-container:
 	docker pull $(REGISTRY)
 	find ./tools/code_checks/ -name "*.sh" -exec chmod +x {} \;
 	
-run-container-check-all: clean-results pull-container
+run-container-check-all: pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllChecks
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runAllChecks
 
 run-container-cppcheck: pull-container
-	-rm -rf _results/cppcheck/* 
-	-mkdir -p _results/cppcheck
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck check-cppcheck 
 
 run-container-clang-tidy-check: pull-container
-	-rm -rf _results/clang-tidy/* 
-	-mkdir -p _results/clang-tidy 
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck check-clang-tidy 
 
 run-container-clang-tidy-format: pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck clang-format
 
 run-container-black-format:
-	-rm -rf _results/black/* 
-	-mkdir -p _results/black
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck black-format
 
 run-container-generate-html-report: pull-container
