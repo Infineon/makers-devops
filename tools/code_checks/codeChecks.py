@@ -22,7 +22,9 @@ def parseArgs():
     parser.add_argument(
         "--runAllChecks", action="store_true", help="Run all checks help"
     )
+    
     parser.add_argument("--runCheck", type=str, help="Run a specific check help")
+    
     parser.add_argument(
         "--projectYAML", type=str, required=True, help="Path to the project YAML file"
     )

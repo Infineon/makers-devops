@@ -22,6 +22,12 @@ jobs:
 
     container:
       image: docker.io/ifxmakers/makers-docker:latest
+
+      # image: ghcr.io/infineon/makers-docker:latest
+      # credentials:
+        # username: ${{ github.actor }}
+        # password: ${{ secrets.github_token }}
+
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
@@ -41,7 +47,6 @@ jobs:
       - name: Set strategy matrix
         id: set-matrix
         run: |
-          # eval $(python3 extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "config/project.yml" --userYAML "config/user.yml" --getAllChecks)
           eval $(python3 extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --getAllChecks)
 
       - name: Append Code Checks Output to Summary
@@ -58,6 +63,12 @@ jobs:
 
     container:
       image: docker.io/ifxmakers/makers-docker:latest
+
+      # image: ghcr.io/infineon/makers-docker:latest
+      # credentials:
+        # username: ${{ github.actor }}
+        # password: ${{ secrets.github_token }}
+
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
@@ -74,20 +85,13 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Checkout makers-devops
-        uses: actions/checkout@v4
-        with:
-          repository: Infineon/makers-devops
-          path: extras/makers-devops
-
       - name: Run all code checks
         id: run_build
         run: |
           echo "Workflow has these parameters :"
           echo "matrix.checks   : ${{ matrix.checks }}"
           echo ""
-          # extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "config/project.yml" --userYAML "config/user.yml" --runCheck ${{ matrix.checks }} > output.log
-          python3 extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }}  > output.log
+          python3 extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} > output.log
 
       - name: Archive code check reports
         if: success() || failure()
@@ -103,6 +107,7 @@ jobs:
           cat output.log >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
 
+          
   GenerateAndUploadReports:
     runs-on: ubuntu-24.04
     if: success() || failure()
@@ -111,6 +116,12 @@ jobs:
 
     container:
       image: docker.io/ifxmakers/makers-docker:latest
+
+      # image: ghcr.io/infineon/makers-docker:latest
+      # credentials:
+        # username: ${{ github.actor }}
+        # password: ${{ secrets.github_token }}
+        
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
