@@ -83,7 +83,7 @@ def runCheck(projectYAML, checkType=None, check=None):
             [
                 "extras/makers-devops/bin/run_command.sh",
                 "-w", f"{projectYAML[checkType][check][0]['working_dir']}",
-                "-c", f"{projectYAML[checkType][check][0]['command']} PORT=/dev/ttyACM1",
+                "-c", f"{projectYAML[checkType][check][0]['command']} PORT=/dev/ttyACM2",
             ]
         ).returncode
 
