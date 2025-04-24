@@ -4,8 +4,7 @@ projectYAMLSchema = {
     Optional("build"): {
         str: {
                 "description": str,
-                "target": str,
-                "fqbn": str,
+                "command": str,
                 "working_dir": str,
         }
     },
@@ -13,15 +12,24 @@ projectYAMLSchema = {
     Optional("check"): {
         str: {
                 "description": str,
-                "tool": str,
                 "command": str,
+                "tool": str,
         }
+    },
+
+    Optional("example"): {
+        str: [ { 
+                  "description": str,
+                  "command": str,
+                  "query": str,
+                  "working_dir": str,
+             } ]
     },
 
     Optional("monitor"): {
         str: [ { 
                   "description": str,
-                  "target": str,
+                  "command": str,
                   "query": str,
                   "working_dir": str,
              } ]
