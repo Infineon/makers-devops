@@ -18,7 +18,7 @@ projectYAMLSchema = {
         }
     },
 
-    Optional("hil"): {
+    Optional("monitor"): {
         str: [ { 
                   "description": str,
                   "target": str,
