@@ -51,12 +51,19 @@ def runCheck(projectYAML, checkType=None, check=None):
     elif checkType == "build":
         returnCode |= subprocess.run(
             [
-                "make",
-                "run-build-target",
-                f"FQBN={projectYAML[checkType][check]['fqbn']}",
-                f"TARGET={projectYAML[checkType][check]['target']}",
+                "extras/makers-devops/bin/run_command.sh",
+                "-w", f"{projectYAML[checkType][check]['working_dir']}",
+                "-c", f"make FQBN={projectYAML[checkType][check]['fqbn']} TARGET={projectYAML[checkType][check]['target']}",
             ]
         ).returncode
+        # returnCode |= subprocess.run(
+        #     [
+        #         "make",
+        #         "run-build-target",
+        #         f"FQBN={projectYAML[checkType][check]['fqbn']}",
+        #         f"TARGET={projectYAML[checkType][check]['target']}",
+        #     ]
+        # ).returncode
 
     elif checkType == "check":
         if "command" not in projectYAML[checkType][check]:
