@@ -53,7 +53,7 @@ def runCheck(projectYAML, checkType=None, check=None):
             [
                 "extras/makers-devops/bin/run_command.sh",
                 "-w", f"{projectYAML[checkType][check]['working_dir']}",
-                "-c", f"make FQBN={projectYAML[checkType][check]['fqbn']} {projectYAML[checkType][check]['target']}",
+                "-c", f"{projectYAML[checkType][check]['command']}",
             ]
         ).returncode
         # returnCode |= subprocess.run(
@@ -76,6 +76,26 @@ def runCheck(projectYAML, checkType=None, check=None):
             paramList = projectYAML[checkType][check]["command"].split()
             paramList.insert(1, f"--file-prefix={check}")
             returnCode |= subprocess.run(paramList).returncode
+
+    # TODO: list element 0 as well as PORT
+    elif checkType == "example":
+        returnCode |= subprocess.run(
+            [
+                "extras/makers-devops/bin/run_command.sh",
+                "-w", f"{projectYAML[checkType][check][0]['working_dir']}",
+                "-c", f"{projectYAML[checkType][check][0]['command']} PORT=/dev/ttyACM1",
+            ]
+        ).returncode
+
+    # TODO: list element 0 as well as PORT
+    elif checkType == "monitor":
+        returnCode |= subprocess.run(
+            [
+                "extras/makers-devops/bin/run_command.sh",
+                "-w", f"{projectYAML[checkType][check][0]['working_dir']}",
+                "-c", f"{projectYAML[checkType][check][0]['command']} PORT=/dev/ttyACM1",
+            ]
+        ).returncode
 
     if returnCode == 2:
         print(f"ERROR : Running check '{check}' failed due to failed code checks !")
