@@ -60,6 +60,7 @@ $command
 # 2>&1 | tee $output_dir/$file_prefix.log
 returnValue=$?
 
+ls -l
 chown -R --reference=`dirname .` _results
 # $output_dir
 
