@@ -1,8 +1,8 @@
 from schema import And, Or, Use, Optional
 
 userYAMLSchema = {
-    Optional("build"): [And(str)],
-    Optional("check"): [And(str)],
-    Optional("example"): [And(str)],
-    Optional("monitor"): [And(str)],
+    Optional("compile"): [And(str)],
+    Optional("code-quality"): [And(str)],
+    Optional("example-test"): [And(str)],
+    Optional("unit-test"): [And(str)],
 }

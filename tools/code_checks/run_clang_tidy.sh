@@ -124,7 +124,7 @@ for pattern in $*; do
     done
 done
 
-
+echo "run-clang-tidy ..."
 chown -R --reference=. $output_dir
 
 echo "$0 done."

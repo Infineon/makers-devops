@@ -1,7 +1,7 @@
 from schema import And, Or, Use, Optional
 
 projectYAMLSchema = {
-    Optional("build"): {
+    Optional("compile"): {
         str: {
                 "description": str,
                 "command": str,
@@ -9,7 +9,7 @@ projectYAMLSchema = {
         }
     },
     
-    Optional("check"): {
+    Optional("code-quality"): {
         str: {
                 "description": str,
                 "command": str,
@@ -17,7 +17,7 @@ projectYAMLSchema = {
         }
     },
 
-    Optional("example"): {
+    Optional("example-test"): {
         str: [ { 
                   "description": str,
                   "command": str,
@@ -26,7 +26,7 @@ projectYAMLSchema = {
              } ]
     },
 
-    Optional("monitor"): {
+    Optional("unit-test"): {
         str: [ { 
                   "description": str,
                   "command": str,
