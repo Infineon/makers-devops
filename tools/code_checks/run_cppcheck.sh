@@ -130,7 +130,6 @@ returnValue=${PIPESTATUS[0]}
 echo "" | tee -a $output_dir/$file_prefix.log
 
 chown -R --reference=. _results
-# $output_dir
 
 echo "$0 done."
 exit $returnValue
