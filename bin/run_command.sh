@@ -62,14 +62,8 @@ $command
 # 2>&1 | tee $output_dir/$file_prefix.log
 returnValue=$?
 
-cd $cwd
-ls -l
-cd $cwd
-ls -l
-cd $cwd
-ls -l
-chown -R --reference=. _results
-# $output_dir
+# cd $cwd
+# chown -R --reference=. _results
 
 echo "$0 done."
 exit $returnValue
