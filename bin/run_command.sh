@@ -62,6 +62,9 @@ $command
 # 2>&1 | tee $output_dir/$file_prefix.log
 returnValue=$?
 
+cd $cwd
+ls -l
+cd $cwd
 ls -l
 cd $cwd
 ls -l
