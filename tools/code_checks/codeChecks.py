@@ -17,19 +17,35 @@ def parseArgs():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--getAllChecks", action="store_true", help="Get all checks help"
+        "--getAllCodeChecks", action="store_true", help="Get all code checks."
     )
+
     parser.add_argument(
-        "--runAllChecks", action="store_true", help="Run all checks help"
+        "--getAllHILChecks", action="store_true", help="Get all HIL checks."
+    )
+
+    parser.add_argument(
+        "--runAllCodeChecks", action="store_true", help="Run all code checks."
+    )
+
+    parser.add_argument(
+        "--runAllHILChecks", action="store_true", help="Run all HIL checks."
     )
     
-    parser.add_argument("--runCheck", type=str, help="Run a specific check help")
+    parser.add_argument("--runCheck", type=str, help="Run a specific check.")
     
     parser.add_argument(
-        "--projectYAML", type=str, required=True, help="Path to the project YAML file"
+        "--projectYAML", type=str, required=True, help="Path to the project YAML file."
     )
     parser.add_argument(
-        "--userYAML", type=str, required=True, help="Path to the user YAML file"
+        "--userYAML", type=str, required=True, help="Path to the user YAML file."
+    )
+    
+    parser.add_argument(
+        "--fqbn", type=str, required=False, help="FQBN of device to be compiled or tested."
+    )
+    parser.add_argument(
+        "--port", type=str, required=False, help="Port of device to be compiled or tested."
     )
 
     args = parser.parse_args()
@@ -77,23 +93,23 @@ def runCheck(projectYAML, checkType=None, check=None):
             paramList.insert(1, f"--file-prefix={check}")
             returnCode |= subprocess.run(paramList).returncode
 
-    # TODO: list element 0 as well as PORT
+    # TODO: list element 0 used !
     elif checkType == "example-test":
         returnCode |= subprocess.run(
             [
                 "extras/makers-devops/bin/run_command.sh",
                 "-w", f"{projectYAML[checkType][check][0]['working_dir']}",
-                "-c", f"{projectYAML[checkType][check][0]['command']} PORT=/dev/ttyACM2",
+                "-c", f"{projectYAML[checkType][check][0]['command']} FQBN={args.fqbn} PORT={args.port}",
             ]
         ).returncode
 
-    # TODO: list element 0 as well as PORT
+    # TODO: list element 0 used !
     elif checkType == "unit-test":
         returnCode |= subprocess.run(
             [
                 "extras/makers-devops/bin/run_command.sh",
                 "-w", f"{projectYAML[checkType][check][0]['working_dir']}",
-                "-c", f"{projectYAML[checkType][check][0]['command']} PORT=/dev/ttyACM1",
+                "-c", f"{projectYAML[checkType][check][0]['command']} FQBN={args.fqbn} PORT={args.port}",
             ]
         ).returncode
 
@@ -113,13 +129,29 @@ if __name__ == "__main__":
         os.getcwd() + "/" + args.projectYAML, os.getcwd() + "/" + args.userYAML
     )
 
-    if args.runAllChecks:
+    if args.runAllCodeChecks:
         for checkType, checkTypeList in userYAML.items():
             if checkType not in projectYAML:
                 print(f"ERROR : Check type '{checkType}' not found in project YAML !")
                 returnCode = 1
 
-            else:
+            elif checkType in ['compile', 'code-quality']:
+                for check in checkTypeList:
+                    if check not in projectYAML[checkType]:
+                        print(
+                            f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !"
+                        )
+                        returnCode = 1
+                    else:
+                        returnCode |= runCheck(projectYAML, checkType, check)
+
+    if args.runAllHILChecks:
+        for checkType, checkTypeList in userYAML.items():
+            if checkType not in projectYAML:
+                print(f"ERROR : Check type '{checkType}' not found in project YAML !")
+                returnCode = 1
+
+            elif checkType in ['example-test', 'unit-test']:
                 for check in checkTypeList:
                     if check not in projectYAML[checkType]:
                         print(
@@ -140,7 +172,7 @@ if __name__ == "__main__":
 
         returnCode |= runCheck(projectYAML, type, check)
 
-    elif args.getAllChecks:
+    elif args.getAllCodeChecks:
         allChecks = 'echo "checks=['
 
         for checkType, checkTypeList in userYAML.items():
@@ -148,14 +180,38 @@ if __name__ == "__main__":
                 print(f"ERROR : Check type '{checkType}' not found in project YAML !")
                 returnCode = 1
 
-            for check in checkTypeList:
-                if check not in projectYAML[checkType]:
-                    print(
-                        f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !"
-                    )
-                    returnCode = 1
-                else:
-                    allChecks += f'\\"{check}\\",'
+            elif checkType in ['compile', 'code-quality']:
+                for check in checkTypeList:
+                    if check not in projectYAML[checkType]:
+                        print(
+                            f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !"
+                        )
+                        returnCode = 1
+                    else:
+                        allChecks += f'\\"{check}\\",'
+
+        allChecks += ']" >> "$GITHUB_OUTPUT"'
+        allChecks = allChecks.replace(",]", "]")
+
+        print(f"{allChecks}")
+
+    elif args.getAllHILChecks:
+        allChecks = 'echo "checks=['
+
+        for checkType, checkTypeList in userYAML.items():
+            if checkType not in projectYAML:
+                print(f"ERROR : Check type '{checkType}' not found in project YAML !")
+                returnCode = 1
+
+            elif checkType in ['example-test', 'unit-test']:
+                for check in checkTypeList:
+                    if check not in projectYAML[checkType]:
+                        print(
+                            f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !"
+                        )
+                        returnCode = 1
+                    else:
+                        allChecks += f'\\"{check}\\",'
 
         allChecks += ']" >> "$GITHUB_OUTPUT"'
         allChecks = allChecks.replace(",]", "]")
