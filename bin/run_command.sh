@@ -66,6 +66,8 @@ cd $cwd
 ls -l
 cd $cwd
 ls -l
+cd $cwd
+ls -l
 chown -R --reference=. _results
 # $output_dir
 
