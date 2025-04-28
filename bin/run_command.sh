@@ -52,6 +52,7 @@ fi
 
 echo ""
 echo "command     : $command"
+echo "cwd         : $cwd"
 echo "working_dir : $workingDir"
 echo ""
 
@@ -61,6 +62,7 @@ $command
 # 2>&1 | tee $output_dir/$file_prefix.log
 returnValue=$?
 
+ls -l
 cd $cwd
 ls -l
 chown -R --reference=. _results
