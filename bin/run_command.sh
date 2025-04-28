@@ -57,7 +57,11 @@ echo ""
 cd $workingDir
 
 $command
+# 2>&1 | tee $output_dir/$file_prefix.log
 returnValue=$?
+
+chown -R --reference=`dirname .` _results
+# $output_dir
 
 echo "$0 done."
 exit $returnValue
