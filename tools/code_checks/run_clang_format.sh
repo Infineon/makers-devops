@@ -113,7 +113,6 @@ done
 
 
 chown -R --reference=. _results
-# $output_dir
 
 echo "$0 done."
 exit $returnValue
