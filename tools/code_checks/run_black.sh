@@ -99,7 +99,7 @@ for pattern in $*; do
 done
 
 
-chown -R --reference=`dirname .` $output_dir
+chown -R --reference=. $output_dir
 
 echo "$0 done."
 exit $returnValue

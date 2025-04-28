@@ -61,7 +61,7 @@ $command
 returnValue=$?
 
 ls -l
-chown -R --reference=`dirname .` _results
+chown -R --reference=. _results
 # $output_dir
 
 echo "$0 done."
