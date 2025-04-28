@@ -25,6 +25,7 @@ eval set -- "$TEMP"
 
 
 command=
+cwd=`pwd`
 workingDir=
 
 while true; do
@@ -60,6 +61,7 @@ $command
 # 2>&1 | tee $output_dir/$file_prefix.log
 returnValue=$?
 
+cd $cwd
 ls -l
 chown -R --reference=. _results
 # $output_dir

@@ -48,7 +48,7 @@ def runCheck(projectYAML, checkType=None, check=None):
         print(f"ERROR : Check 'None' is not valid !")
         returnCode = 1
 
-    elif checkType == "build":
+    elif checkType == "compile":
         returnCode |= subprocess.run(
             [
                 "extras/makers-devops/bin/run_command.sh",
@@ -65,7 +65,7 @@ def runCheck(projectYAML, checkType=None, check=None):
         #     ]
         # ).returncode
 
-    elif checkType == "check":
+    elif checkType == "code-quality":
         if "command" not in projectYAML[checkType][check]:
             print(
                 f"ERROR : Option 'command' not found in project YAML for {checkType} / {check} !"
@@ -78,7 +78,7 @@ def runCheck(projectYAML, checkType=None, check=None):
             returnCode |= subprocess.run(paramList).returncode
 
     # TODO: list element 0 as well as PORT
-    elif checkType == "example":
+    elif checkType == "example-test":
         returnCode |= subprocess.run(
             [
                 "extras/makers-devops/bin/run_command.sh",
@@ -88,7 +88,7 @@ def runCheck(projectYAML, checkType=None, check=None):
         ).returncode
 
     # TODO: list element 0 as well as PORT
-    elif checkType == "monitor":
+    elif checkType == "unit-test":
         returnCode |= subprocess.run(
             [
                 "extras/makers-devops/bin/run_command.sh",
