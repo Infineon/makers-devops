@@ -102,6 +102,8 @@ for pattern in $*; do
 
         fileReturnValue=${PIPESTATUS[0]}
 
+        echo "" | tee -a $output_dir/$file_prefix.$file_base.log
+
         if [ $fileReturnValue != 0 ]; then
             returnValue=2
         fi
