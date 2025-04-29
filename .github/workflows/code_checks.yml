@@ -153,7 +153,7 @@ jobs:
       - name: Merge cppcheck and clang-tidy Reports
         run: |
           python3 extras/makers-devops/tools/code_checks/merge_clang_tidy_cppcheck.py \
-            --logDir=_results/clang-tidy/code-quality-cppcheck \
+            --logDir=_results/clang-tidy/code-quality-clang-tidy \
             --xmlPath=_results/cppcheck/code-quality-cppcheck/code-quality-cppcheck-errors.xml
 
           cppcheck-htmlreport \
