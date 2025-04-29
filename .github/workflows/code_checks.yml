@@ -91,7 +91,7 @@ jobs:
           echo "Workflow has these parameters :"
           echo "matrix.checks   : ${{ matrix.checks }}"
           echo ""
-          
+
           python3 extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} > output.log
 
       - name: Archive code check reports
@@ -112,8 +112,7 @@ jobs:
   GenerateAndUploadReports:
     runs-on: ubuntu-24.04
     if: success() || failure()
-    needs:
-      - codeChecks
+    needs: codeChecks
 
     container:
       image: docker.io/ifxmakers/makers-docker:latest
@@ -142,38 +141,38 @@ jobs:
       - name: Download cppcheck artifacts
         uses: actions/download-artifact@v4
         with:
-          name: check-cppcheck
+          name: code-quality-cppcheck
           path: _results
 
       - name: Download clang-tidy artifacts
         uses: actions/download-artifact@v4
         with:
-          name: check-clang-tidy
+          name: code-quality-clang-tidy
           path: _results
 
       - name: Merge cppcheck and clang-tidy Reports
         run: |
           python3 extras/makers-devops/tools/code_checks/merge_clang_tidy_cppcheck.py \
-            --logDir=_results/clang-tidy/check-clang-tidy \
-            --xmlPath=_results/cppcheck/check-cppcheck/check-cppcheck-errors.xml
+            --logDir=_results/clang-tidy/code-quality-cppcheck \
+            --xmlPath=_results/cppcheck/code-quality-cppcheck/code-quality-cppcheck-errors.xml
 
           cppcheck-htmlreport \
-            --file=_results/cppcheck/check-cppcheck/check-cppcheck-errors.xml \
+            --file=_results/cppcheck/code-quality-cppcheck/code-quality-cppcheck-errors.xml \
             --title=CPPCheck \
-            --report-dir=_results/cppcheck/check-cppcheck/html-report \
+            --report-dir=_results/cppcheck/code-quality-cppcheck/html-report \
             --source-dir=.
 
       - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: html-report
-          path: _results/cppcheck/check-cppcheck/html-report
+          path: _results/cppcheck/code-quality-cppcheck/html-report
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _results/cppcheck/check-cppcheck/html-report
+          publish_dir: _results/cppcheck/code-quality-cppcheck/html-report
           keep_files: false 
 
       - name: Display Report URL
