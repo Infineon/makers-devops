@@ -55,7 +55,10 @@ def parseArgs():
 
 def runCheck(projectYAML, checkType=None, check=None):
     returnCode = 0
-
+    currentReturnCode = 0
+    failedJobs = []
+    passedJobs = []
+    
     if checkType is None:
         print(f"ERROR : Check type 'None' is not valid !")
         returnCode = 1
@@ -65,47 +68,67 @@ def runCheck(projectYAML, checkType=None, check=None):
         returnCode = 1
 
     elif checkType == "compile":
-        returnCode |= subprocess.run(
-            [
-                "extras/makers-devops/bin/run_command.sh",
-                "-w", f"{projectYAML[checkType][check]['working_dir']}",
-                "-c", f"{projectYAML[checkType][check]['command']}",
-            ]
-        ).returncode
-        # returnCode |= subprocess.run(
-        #     [
-        #         "make",
-        #         "run-build-target",
-        #         f"FQBN={projectYAML[checkType][check]['fqbn']}",
-        #         f"TARGET={projectYAML[checkType][check]['target']}",
-        #     ]
-        # ).returncode
+        for fqbn in projectYAML[checkType][check]['fqbns']:
+            currentReturnCode |= subprocess.run(
+                [
+                    "extras/makers-devops/bin/run_command.sh",
+                    "-w", f"{projectYAML[checkType][check]['working_dir']}",
+                    "-c", f"{projectYAML[checkType][check]['command']} FQBN={fqbn}",
+                ]
+            ).returncode
+
+            returnCode |= currentReturnCode
+
+            if currentReturnCode != 0:
+                failedJobs.append(check)
+            else:
+                passedJobs.append(check)
+
+        for job in failedJobs:
+            print(f"ERROR : Job '{check}' failed !")
+
+        for job in passedJobs:
+            print(f"ERROR : Job '{check}' passed !")
+
 
     elif checkType == "code-quality":
-        if "command" not in projectYAML[checkType][check]:
-            print(
-                f"ERROR : Option 'command' not found in project YAML for {checkType} / {check} !"
-            )
-            returnCode = 1
+        # if "command" not in projectYAML[checkType][check]:
+        #     print(
+        #         f"ERROR : Option 'command' not found in project YAML for {checkType} / {check} !"
+        #     )
+        #     returnCode = 1
 
+        # else:
+        paramList = projectYAML[checkType][check]["command"].split()
+        paramList.insert(1, f"--file-prefix={check}")
+        currentReturnCode |= subprocess.run(paramList).returncode
+
+        if currentReturnCode != 0:
+            print(f"ERROR: Job '{check}' failed !")
         else:
-            paramList = projectYAML[checkType][check]["command"].split()
-            paramList.insert(1, f"--file-prefix={check}")
-            returnCode |= subprocess.run(paramList).returncode
+            print(f"INFO: Job '{check}' passed !")
+
 
     # TODO: list element 0 used !
     elif checkType == "example-test":
-        returnCode |= subprocess.run(
+        currentReturnCode |= subprocess.run(
             [
                 "extras/makers-devops/bin/run_command.sh",
                 "-w", f"{projectYAML[checkType][check][0]['working_dir']}",
                 "-c", f"{projectYAML[checkType][check][0]['command']} FQBN={args.fqbn} PORT={args.port}",
             ]
         ).returncode
+
+        returnCode |= currentReturnCode
+
+        if currentReturnCode != 0:
+            print(f"ERROR: Job '{check}' failed !")
+        else:
+            print(f"INFO: Job '{check}' passed !")
 
     # TODO: list element 0 used !
     elif checkType == "unit-test":
-        returnCode |= subprocess.run(
+        currentReturnCode |= subprocess.run(
             [
                 "extras/makers-devops/bin/run_command.sh",
                 "-w", f"{projectYAML[checkType][check][0]['working_dir']}",
@@ -113,11 +136,17 @@ def runCheck(projectYAML, checkType=None, check=None):
             ]
         ).returncode
 
-    if returnCode == 2:
-        print(f"ERROR : Running check '{check}' failed due to failed code checks !")
-    elif returnCode != 0:
-        print(f"ERROR : Problem running check '{check}' !")
+        returnCode |= currentReturnCode
 
+        if currentReturnCode != 0:
+            print(f"ERROR: Job '{check}' failed !")
+        else:
+            print(f"INFO: Job '{check}' passed !")
+
+
+    if returnCode != 0:
+        print(f"ERROR : Some check(s) failed, please check logfile !")
+ 
     return returnCode
 
 
