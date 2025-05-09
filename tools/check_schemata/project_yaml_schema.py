@@ -5,6 +5,7 @@ projectYAMLSchema = {
         str: {
                 "description": str,
                 "command": str,
+                "fqbns" : [str],
                 "working_dir": str,
         }
     },
