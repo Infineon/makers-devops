@@ -138,7 +138,7 @@ jobs:
           repository: Infineon/makers-devops
           path: extras/makers-devops
 
-      - name: Download cppcheck artifacts
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           name: code-quality-cppcheck
@@ -179,5 +179,5 @@ jobs:
         run: |
           REPORT_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
           echo "**Deploying report to GitHub Pages**" >> $GITHUB_STEP_SUMMARY
-          echo "[View Cppcheck and Clang-tidy Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
-          echo "URL: $REPORT_URL"  # Also print it in logs for visibility      
+          echo "[View Code Quality Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
+          echo "URL: $REPORT_URL"  # Also print it in logs for visibility    
