@@ -36,13 +36,8 @@ jobs:
       - name: Checkout repository 
         uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: true
 
-      - name: Checkout makers-devops
-        uses: actions/checkout@v4
-        with:
-          repository: Infineon/makers-devops
-          path: extras/makers-devops
 
       - name: Set strategy matrix
         id: set-matrix
@@ -130,49 +125,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: false
-
-      - name: Checkout makers-devops
-        uses: actions/checkout@v4
-        with:
-          repository: Infineon/makers-devops
-          path: extras/makers-devops
+          submodules: true
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: code-quality-cppcheck
           path: _results
 
-      - name: Download clang-tidy artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: code-quality-clang-tidy
-          path: _results
-
-      - name: Merge cppcheck and clang-tidy Reports
+      - name: Generate Reports
         run: |
-          python3 extras/makers-devops/tools/code_checks/merge_clang_tidy_cppcheck.py \
-            --logDir=_results/clang-tidy/code-quality-clang-tidy \
-            --xmlPath=_results/cppcheck/code-quality-cppcheck/code-quality-cppcheck-errors.xml
-
-          cppcheck-htmlreport \
-            --file=_results/cppcheck/code-quality-cppcheck/code-quality-cppcheck-errors.xml \
-            --title=CPPCheck \
-            --report-dir=_results/cppcheck/code-quality-cppcheck/html-report \
-            --source-dir=.
+          extras/makers-devops/tools/code_checks/generate_reports.sh _results
 
       - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: html-report
-          path: _results/cppcheck/code-quality-cppcheck/html-report
+          path: _results/html-report
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _results/cppcheck/code-quality-cppcheck/html-report
+          publish_dir: _results/html-report
           keep_files: false 
 
       - name: Display Report URL
