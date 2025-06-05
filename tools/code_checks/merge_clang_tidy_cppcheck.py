@@ -4,6 +4,36 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 import argparse
 
+def create_results_xml(file_path):
+    """
+    This function is used to initialize the XML file where code check results will be appended.
+    It creates an XML file with a root element named "results" and a version attribute set to "2".
+    
+    Args:
+        file_path (str): The path where the XML file will be created.
+    """
+    # Create the root element
+    root = ET.Element("results")
+    root.set("version", "2")
+
+    # Create an ElementTree object from the root
+    tree = ET.ElementTree(root)
+
+    # Write the XML to the specified file with the proper declaration
+    with open(file_path, "wb") as f:
+        tree.write(f, encoding="utf-8", xml_declaration=True)
+
+def append_code_check_xml_to_results_xml(output_xml_path, xml_file):
+    tree = ET.parse(output_xml_path)
+    root = tree.getroot()
+    xml_tree = ET.parse(xml_file)
+    xml_root = xml_tree.getroot()
+
+    for child in xml_root:
+        root.append(child)
+
+    # Write back the updated results.xml
+    tree.write(output_xml_path, encoding="utf-8", xml_declaration=True)
 
 def parse_clang_tidy_log(file_path):
     errors = []
@@ -32,8 +62,8 @@ def parse_clang_tidy_log(file_path):
     return errors
 
 
-def append_clang_tidy_results_to_xml(xml_path, results):
-    tree = ET.parse(xml_path)
+def append_clang_tidy_results_to_xml(output_xml_path, clang_tidy_results):
+    tree = ET.parse(output_xml_path)
     root = tree.getroot()
 
     # Check if clang-tidy section exists, else create it
@@ -45,7 +75,7 @@ def append_clang_tidy_results_to_xml(xml_path, results):
     errors_section = clang_tidy_section.find("errors")
     existing_errors = set()
 
-    for result in results:
+    for result in clang_tidy_results:
         unique_id = (
             result["file"],
             result["line"],
@@ -80,20 +110,26 @@ def append_clang_tidy_results_to_xml(xml_path, results):
     xml_str = ET.tostring(root, encoding="unicode")
     pretty_xml_str = minidom.parseString(xml_str).toprettyxml(indent="    ")
 
-    with open(xml_path, "w") as file:
+    with open(output_xml_path, "w") as file:
         file.write(pretty_xml_str)
 
 
-def main(clang_tidy_log_dir, cppcheck_xml_path):
-    clang_tidy_results = []
+def main(clang_tidy_log_dir, cppcheck_xml_path, output_xml_path):
+    create_results_xml(output_xml_path)
 
-    for log_file in os.listdir(clang_tidy_log_dir):
-        if log_file.endswith(".log"):
-            log_path = os.path.join(clang_tidy_log_dir, log_file)
-            results = parse_clang_tidy_log(log_path)
-            clang_tidy_results.extend(results)
+    if cppcheck_xml_path != "":
+        append_code_check_xml_to_results_xml(output_xml_path, cppcheck_xml_path)
+        
+    if clang_tidy_log_dir != "":
+        clang_tidy_results = []
 
-    append_clang_tidy_results_to_xml(cppcheck_xml_path, clang_tidy_results)
+        for log_file in os.listdir(clang_tidy_log_dir):
+            if log_file.endswith(".log"):
+                log_path = os.path.join(clang_tidy_log_dir, log_file)
+                results = parse_clang_tidy_log(log_path)
+                clang_tidy_results.extend(results)
+
+        append_clang_tidy_results_to_xml(output_xml_path, clang_tidy_results)
 
 
 if __name__ == "__main__":
@@ -103,14 +139,21 @@ if __name__ == "__main__":
     parser.add_argument(
         "--logDir",
         type=str,
-        required=True,
+        default="",
         help="Directory containing clang-tidy log files.",
     )
     parser.add_argument(
         "--xmlPath",
         type=str,
+        default="",
+        help="Path to the cppcheck XML file.",
+    )
+    parser.add_argument(
+        "--outputPath",
+        type=str,
         required=True,
-        help="Path to the cppcheck XML file to append results.",
+        help="Path to the output XML file to append results.",
     )
     args = parser.parse_args()
-    main(args.logDir, args.xmlPath)
+    main(args.logDir, args.xmlPath, args.outputPath)
+
