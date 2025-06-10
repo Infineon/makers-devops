@@ -1,0 +1,56 @@
+
+compile:
+    # build-arduino-wire-XMC4700:
+    #   description: Compiling test_wire_connected1_pingpong.cpp for XMC4700 platform
+    #   command: make -f Makefile.arduino.mk test_wire_connected1_pingpong compile
+    #   fqbns:
+          # - Infineon:xmc:XMC4700_Relax_Kit
+
+    # build-wire-XMC1100:
+    #   description: Compiling test_wire_connected2_masterpingpong.cpp for XMC1100 platform
+    #   command: make -f Makefile.arduino.mk test_wire_connected2_masterpingpong compile
+    #   fqbns:
+          # - Infineon:xmc:XMC1100_Boot_Kit
+
+
+    compile-magnetic-w2b6:
+      description: Compiling W2B6 unit test for XMC11002Go platform
+      command: make -f Makefile.arduino.mk iic compile
+      fqbns: 
+        - Infineon:xmc:XMC1100_XMC2GO
+        - Infineon:xmc:XMC1100_Boot_Kit        
+      working_dir: extras/arduino-xensiv-3d-magnetic-sensor-tlx493d
+
+
+code-quality:
+    code-quality-clang-tidy:
+      description: clang-tidy check sources
+      tool: clang-tidy 
+      command: extras/makers-devops/tools/code_checks/run_clang_tidy.sh -i src/excludes src/cpp/ok.cpp
+
+    code-quality-cppcheck:
+      description: cppcheck check sources
+      tool: cppcheck
+      command: extras/makers-devops/tools/code_checks/run_cppcheck.sh --no-suppress-default src/c/* src/cpp  
+
+
+example-test:
+    example-test-magnetic-w2b6-xmc100_xmc2go:
+      - description: Compiling, flashing and monitoring W2B6 unit test for XMC11002Go platform.
+        command: make -f Makefile.arduino.mk iic compile upload
+        query: tlx493d_w2b6 > 0 and type.str.startswith('xmc1100')
+        working_dir: extras/arduino-xensiv-3d-magnetic-sensor-tlx493d
+        options:
+          PARSE_START_TAG: Looping ...
+          PARSE_END_TAG: "count : 2"
+
+
+unit-test:
+    unit-test-magnetic-w2b6-xmc100_xmc2go:
+      - description: Compiling, flashing and monitoring W2B6 unit test for XMC11002Go platform.
+        command: make -f Makefile.arduino.mk iic compile upload
+        query: description.str.contains('DPS310') and type.str.startswith('xmc1100')
+        working_dir: extras/arduino-xensiv-3d-magnetic-sensor-tlx493d
+        options:
+          PARSE_START_TAG: Unity test run
+          PARSE_END_TAG: "^OK|^FAIL"
