@@ -112,7 +112,8 @@ jobs:
   GenerateAndUploadReports:
     runs-on: ubuntu-24.04
     if: success() || failure()
-    needs: codeChecks
+    needs:
+      - codeChecks
 
     container:
       image: docker.io/ifxmakers/makers-docker:latest
