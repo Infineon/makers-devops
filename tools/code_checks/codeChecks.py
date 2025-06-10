@@ -28,11 +28,13 @@ def parseArgs():
         "--runAllCodeChecks", action="store_true", help="Run all code checks."
     )
 
-    parser.add_argument(
-        "--runAllHILChecks", action="store_true", help="Run all HIL checks."
-    )
+    # parser.add_argument(
+    #     "--runAllHILChecks", action="store_true", help="Run all HIL checks."
+    # )
     
     parser.add_argument("--runCheck", type=str, help="Run a specific check.")
+   
+    parser.add_argument("--runCheckIndex", type=int, default=0, help="Run the check at the specified index (starting from 0, default 0) in the list of checks if multiple are specified for the check.")
     
     parser.add_argument(
         "--projectYAML", type=str, required=True, help="Path to the project YAML file."
@@ -53,7 +55,7 @@ def parseArgs():
     return args
 
 
-def runCheck(projectYAML, checkType=None, check=None):
+def runCheck(projectYAML, checkType=None, check=None, checkIndex=0):
     returnCode = 0
     currentReturnCode = 0
     failedJobs = []
@@ -109,13 +111,12 @@ def runCheck(projectYAML, checkType=None, check=None):
             print(f"INFO: Job '{check}' passed !")
 
 
-    # TODO: list element 0 used !
     elif checkType == "example-test":
         currentReturnCode |= subprocess.run(
             [
                 "extras/makers-devops/bin/run_command.sh",
-                "-w", f"{projectYAML[checkType][check][0]['working_dir']}",
-                "-c", f"{projectYAML[checkType][check][0]['command']} FQBN={args.fqbn} PORT={args.port}",
+                "-w", f"{projectYAML[checkType][check][checkIndex]['working_dir']}",
+                "-c", f"{projectYAML[checkType][check][checkIndex]['command']} FQBN={args.fqbn} PORT={args.port}",
             ]
         ).returncode
 
@@ -126,13 +127,12 @@ def runCheck(projectYAML, checkType=None, check=None):
         else:
             print(f"INFO: Job '{check}' passed !")
 
-    # TODO: list element 0 used !
     elif checkType == "unit-test":
         currentReturnCode |= subprocess.run(
             [
                 "extras/makers-devops/bin/run_command.sh",
-                "-w", f"{projectYAML[checkType][check][0]['working_dir']}",
-                "-c", f"{projectYAML[checkType][check][0]['command']} FQBN={args.fqbn} PORT={args.port}",
+                "-w", f"{projectYAML[checkType][check][checkIndex]['working_dir']}",
+                "-c", f"{projectYAML[checkType][check][checkIndex]['command']} FQBN={args.fqbn} PORT={args.port}",
             ]
         ).returncode
 
@@ -158,6 +158,38 @@ if __name__ == "__main__":
         os.getcwd() + "/" + args.projectYAML, os.getcwd() + "/" + args.userYAML
     )
 
+    if args.runAllCodeChecks or args.runCheck:
+        if "options" in projectYAML:
+            options =  projectYAML["options"]
+
+            if "USE_CORE" in options:
+                useCore = options["USE_CORE"]
+
+                if "local" in useCore:
+                    returnCode |= subprocess.run(
+                        [
+                            "extras/makers-devops/bin/setup_container.sh",
+                            "-c", "local"
+                        ]
+                    ).returncode
+                else:
+                    coreName = useCore["name"]
+
+                    if "url" not in useCore:
+                        print(f"When specifying a specific core an Url must also be specified !\n")
+                        exit(1)
+                    else:
+                        returnCode |= subprocess.run(
+                            [
+                                "extras/makers-devops/bin/setup_container.sh",
+                                "-c", coreName,
+                                "-u", useCore["url"],
+                            ]
+                        ).returncode
+                    
+
+
+
     if args.runAllCodeChecks:
         for checkType, checkTypeList in userYAML.items():
             if checkType not in projectYAML:
@@ -174,24 +206,25 @@ if __name__ == "__main__":
                     else:
                         returnCode |= runCheck(projectYAML, checkType, check)
 
-    if args.runAllHILChecks:
-        for checkType, checkTypeList in userYAML.items():
-            if checkType not in projectYAML:
-                print(f"ERROR : Check type '{checkType}' not found in project YAML !")
-                returnCode = 1
+    # if args.runAllHILChecks:
+    #     for checkType, checkTypeList in userYAML.items():
+    #         if checkType not in projectYAML:
+    #             print(f"ERROR : Check type '{checkType}' not found in project YAML !")
+    #             returnCode = 1
 
-            elif checkType in ['example-test', 'unit-test']:
-                for check in checkTypeList:
-                    if check not in projectYAML[checkType]:
-                        print(
-                            f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !"
-                        )
-                        returnCode = 1
-                    else:
-                        returnCode |= runCheck(projectYAML, checkType, check)
+    #         elif checkType in ['example-test', 'unit-test']:
+    #             for check in checkTypeList:
+    #                 if check not in projectYAML[checkType]:
+    #                     print(
+    #                         f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !"
+    #                     )
+    #                     returnCode = 1
+    #                 else:
+    #                     returnCode |= runCheck(projectYAML, checkType, check)
 
     elif args.runCheck:
         check = args.runCheck
+        checkIndex = args.runCheckIndex
         type = None
 
         for checkType, checkTypeList in userYAML.items():
@@ -199,7 +232,7 @@ if __name__ == "__main__":
                 type = checkType
                 break
 
-        returnCode |= runCheck(projectYAML, type, check)
+        returnCode |= runCheck(projectYAML, type, check, checkIndex)
 
     elif args.getAllCodeChecks:
         allChecks = 'echo "checks=['

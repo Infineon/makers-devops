@@ -15,7 +15,7 @@ usage() {
 TEMP=`getopt -o c:w: --long command:,working_dir: -n "$0" -- "$@"`
 
 if [ $? != 0 ] ; then
-  echo "Terminating..." >&2 ;
+  echo "Terminating..." 1>&2 ;
   usage ;
   exit 1 ; 
 fi
@@ -62,8 +62,10 @@ $command
 # 2>&1 | tee $output_dir/$file_prefix.log
 returnValue=$?
 
-# cd $cwd
-# chown -R --reference=. _results
+
+if [ -d "build" ]; then
+  chown -R --reference=. build
+fi
 
 echo "$0 done."
 exit $returnValue

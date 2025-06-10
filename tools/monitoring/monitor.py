@@ -30,64 +30,55 @@ class Monitor:
 
     Attributes
     ----------
-        aa (dict)
-            bb.
 
     Methods
     -------
-        info(additional=""):
-            Prints useful HIL status information.
-        
-        read_device_serial(self, sn):
-            Method to switch off and on all devices.
- 
+        read_unity_serial(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "Unity test run", end_token = "^OK|^FAIL",
+                          error_token = "ERROR ", warn_token = "WARN ", report_file = "unity.log"):
+            Low-level method to parse Unity unit test output read from the serial device.
+
+        parseUnityOutput(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "Unity test run", end_token = "^OK|^FAIL",
+                         error_token = "ERROR ", warn_token = "WARN ", report_file = "unity.log")
+            High-level method to parse Unity unit test output read from the serial device.
+
+        read_example_serial(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = ".*", end_token = ".*",
+                            error_token = "ERROR|FATAL", warn_token = "WARNING|WARN", report_file = "example.log")
+            Low-level method to parse example test output read from the serial device.
+
+        parseExampleOutput(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = ".*", end_token = ".*",
+                           error_token = "ERROR|FATAL", warn_token = "WARNING", report_file = "example.log")
+            High-level method to parse example test output read from the serial device.
     """
 
 
-    # def read_device_serial(self, sn = "", baudrate = 115200, runtime = 30, start_tag = "Unity test run", end_tag = "^OK|^FAIL",
-    #                        error_tag = "ERROR ", warn_tag = "WARN ", report_file = "unity.log"):
-    #     """
-    #     Method to.
-
-    #         Parameters:
-    #         -----------
-    #             sn (str) : A string representing the device's serial number.
-
-    #         Returns:
-    #         --------
-    #             output (str) : Output read from device.
-    #     """
-    #     self.parseUnityOutput(self.snToPort[sn])
-
-
-    def read_unity_serial(self, serial_object = None, baudrate = 115200, runtime = 30, start_tag = "Unity test run", end_tag = "^OK|^FAIL",
-    # def read_unity_serial(self, comport = "", baudrate = 115200, runtime = 30, start_tag = "Unity test run", end_tag = "^OK|^FAIL",
-                    error_tag = "ERROR ", warn_tag = "WARN ", report_file = "unity.log"):
+    # def read_unity_serial(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "^TEST\(", end_token = "^OK|^FAIL",
+    def read_unity_serial(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "Unity test run", end_token = "^OK|^FAIL",
+                          error_token = "ERROR ", warn_token = "WARN ", report_file = "unity.log"):
         """
         Function reading from the serial port for the time specified by 'runtime'. It starts analyzing the output
-        between 'start_tag' and 'end_tag'.
+        between 'start_token' and 'end_token'.
 
             Parameters:
             -----------
-                comport (str)     : A string representing the device's comport.
-                baudrate (int)    : The baud speed rate for this serial port.
-                runtime (int)     : The maximum time to collect data from the port.
-                start_tag (str)   : Begin tag to start parsing output.
-                end_tag (str)     : End tag to stop parsing data.
-                error_tag (str)   : The tag for an error message.
-                warn_tag (str)    : The tag for a warning message.
-                report_file (str) : Name of output log file.
+                serial_object (obj) : The serial object related to the device's comport.
+                baudrate (int)      : The baud speed rate for this serial port.
+                runtime (int)       : The maximum time to collect data from the port.
+                start_token (str)     : Begin token to start parsing output.
+                end_token (str)       : End token to stop parsing data.
+                error_token (str)     : The token for an error message.
+                warn_token (str)      : The token for a warning message.
+                report_file (str)   : Name of output log file.
 
             Returns:
             --------
                 errors (list)             : List of error messages.
                 warnings (list)           : List of warning messages.
                 summary (list)            : Summary list, i.e. total number of tests, number of failed as well as ignored tests.
-                start tag found (boolean) : Wether the start tag has been found.
-                end tag found (boolean)   : Wether the end tag has been found.
+                start token found (boolean) : Wether the start token has been found.
+                end token found (boolean)   : Wether the end token has been found.
         """
-        error_pattern   = re.compile(error_tag, re.IGNORECASE)
-        warn_pattern    = re.compile(warn_tag, re.IGNORECASE)
+        error_pattern   = re.compile(error_token, re.IGNORECASE)
+        warn_pattern    = re.compile(warn_token, re.IGNORECASE)
         summary_pattern = re.compile(r'.*Tests.*Failures.*Ignored', re.IGNORECASE)
         number_pattern  = re.compile(r'[\d]+')
 
@@ -100,24 +91,23 @@ class Monitor:
         summary     = []
         
         try:
-            # with serial.Serial(comport, baudrate, timeout=runtime) as ser:
             with open(report_file, 'w') as filehandle:
                 while (time.time() < end_time) and not (start_found and end_found):
                     try:
                         line = serial_object.readline().decode().strip()
-                        print(line)
+                        # print(line)
                     except:
                         return errors, warnings, summary, start_found, end_found
                     
-                    if re.search(start_tag, line, re.IGNORECASE) and not end_found:
+                    if re.search(start_token, line, re.IGNORECASE) and not end_found:
                         start_found = True
 
-                    if re.search(end_tag, line, re.IGNORECASE) and start_found:
+                    if re.search(end_token, line, re.IGNORECASE) and start_found:
                         end_found = True
 
                     if start_found:
                         print(line, flush = True, file = filehandle)
-                        # print(line, flush = True)
+                        print(line, flush = True)
 
                         if error_pattern.search(line):
                             errors.append(line)
@@ -135,34 +125,33 @@ class Monitor:
         return errors, warnings, summary, start_found, end_found
 
 
-    def parseUnityOutput(self, serial_object = None, baudrate = 115200, runtime = 30, start_tag = "Unity test run", end_tag = "^OK|^FAIL",
-    # def parseUnityOutput(self, comport = "", baudrate = 115200, runtime = 30, start_tag = "Unity test run", end_tag = "^OK|^FAIL",
-                         error_tag = "ERROR ", warn_tag = "WARN ", report_file = "unity.log"):
+    # def parseUnityOutput(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "^TEST\(", end_token = "^OK|^FAIL",
+    def parseUnityOutput(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "Unity test run", end_token = "^OK|^FAIL",
+                         error_token = "ERROR ", warn_token = "WARN ", report_file = "unity.log"):
         """
         Function collects data from the serial port either for the period of the runtime or
-        if for all between begin and end tags
+        if for all between begin and end tokens
 
             Parameters:
             -----------
-                comport (str)     : A string representing the device's comport.
-                baudrate (int)    : The baud speed rate for this serial port.
-                runtime (int)     : The maximum time to collect data from the port.
-                start_tag (str)   : Begin tag to start parsing output.
-                end_tag (str)     : End tag to stop parsing data.
-                error_tag (str)   : The tag for an error message.
-                warn_tag (str)    : The tag for a warning message.
-                report_file (str) : Name of output log file.
+                serial_object (obj) : The serial object related to the device's comport.
+                baudrate (int)      : The baud speed rate for this serial port.
+                runtime (int)       : The maximum time to collect data from the port.
+                start_token (str)     : Begin token to start parsing output.
+                end_token (str)       : End token to stop parsing data.
+                error_token (str)     : The token for an error message.
+                warn_token (str)      : The token for a warning message.
+                report_file (str)   : Name of output log file.
 
             Returns:
             --------
                 errors (list)             : List of error messages.
                 warnings (list)           : List of warning messages.
                 summary (list)            : Summary list, i.e. total number of tests, number of failed as well as ignored tests.
-                start tag found (boolean) : Whether the start tag has been found.
-                end tag found (boolean)   : Whether the end tag has been found.
+                start token found (boolean) : Whether the start token has been found.
+                end token found (boolean)   : Whether the end token has been found.
         """
-        error_list, warn_list, summary, start_found, end_found = self.read_unity_serial(serial_object, baudrate, runtime, start_tag, end_tag, error_tag, warn_tag, report_file)
-        # error_list, warn_list, summary, start_found, end_found = self.read_unity_serial(comport, baudrate, runtime, start_tag, end_tag, error_tag, warn_tag, report_file)
+        error_list, warn_list, summary, start_found, end_found = self.read_unity_serial(serial_object, baudrate, runtime, start_token, end_token, error_token, warn_token, report_file)
 
         if start_found and end_found:
             if len(summary) == 3:
@@ -186,59 +175,39 @@ class Monitor:
                 print(f"\nFailed to find summary in output. Make sure to have set the correct port and baudrate.\n")
 
         else:
-            print(f'\nFailed to read Unity output ! {"Start" if not start_found else "End"} tag not found !\nMake sure to have set the correct port and baudrate.\n')
+            print(f'\nFailed to read Unity output ! {"Start" if not start_found else "End"} token not found !\nMake sure to have set the correct port and baudrate.\n')
 
 
         return( 1 if (len(summary) == 3 and int(summary[1]) > 0) or (len(summary) != 3) or not start_found or not end_found else 0 )
-    """
 
 
-    # def read_device_serial(self, sn = "", baudrate = 115200, runtime = 30, start_tag = "Unity test run", end_tag = "^OK|^FAIL",
-    #                        error_tag = "ERROR ", warn_tag = "WARN ", report_file = "unity.log"):
-    #     """
-    #     Method to.
 
-    #         Parameters:
-    #         -----------
-    #             sn (str) : A string representing the device's serial number.
-
-    #         Returns:
-    #         --------
-    #             output (str) : Output read from device.
-    #     """
-    #     self.parseUnityOutput(self.snToPort[sn])
-
-
-    def read_example_serial(self, serial_object = None, baudrate = 115200, runtime = 30, start_tag = ".*", end_tag = ".*",
-    # def read_example_serial(self, comport = "", baudrate = 115200, runtime = 30, start_tag = ".*", end_tag = ".*",
-                            error_tag = "ERROR|FATAL", warn_tag = "WARNING|WARN", report_file = "example.log"):
+    def read_example_serial(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = ".*", end_token = ".*",
+                            error_token = "ERROR|FATAL", warn_token = "WARNING|WARN", report_file = "example.log"):
         """
-        Function reading from the serial port for the time specified by 'runtime'. It starts analyzing the output
-        between 'start_tag' and 'end_tag'.
+        Function reading from the serial port for the time specified by 'runtime'. It starts analyzing the output between 'start_token' and 'end_token'.
 
             Parameters:
             -----------
-                comport (str)     : A string representing the device's comport.
-                baudrate (int)    : The baud speed rate for this serial port.
-                runtime (int)     : The maximum time to collect data from the port.
-                start_tag (str)   : Begin tag to start parsing output.
-                end_tag (str)     : End tag to stop parsing data.
-                error_tag (str)   : The tag for an error message.
-                warn_tag (str)    : The tag for a warning message.
-                report_file (str) : Name of output log file.
+                serial_object (obj) : The serial object related to the device's comport.
+                baudrate (int)      : The baud speed rate for this serial port.
+                runtime (int)       : The maximum time to collect data from the port.
+                start_token (str)     : Begin token to start parsing output.
+                end_token (str)       : End token to stop parsing data.
+                error_token (str)     : The token for an error message.
+                warn_token (str)      : The token for a warning message.
+                report_file (str)   : Name of output log file.
 
             Returns:
             --------
                 errors (list)             : List of error messages.
                 warnings (list)           : List of warning messages.
                 summary (list)            : Summary list, i.e. total number of errors and warnings.
-                start tag found (boolean) : Whether the start tag has been found.
-                end tag found (boolean)   : Whether the end tag has been found.
+                start token found (boolean) : Whether the start token has been found.
+                end token found (boolean)   : Whether the end token has been found.
         """
-        error_pattern   = re.compile(error_tag, re.IGNORECASE)
-        warn_pattern    = re.compile(warn_tag, re.IGNORECASE)
-        # summary_pattern = re.compile(r'.*Tests.*Failures.*Ignored', re.IGNORECASE)
-        # number_pattern  = re.compile(r'[\d]+')
+        error_pattern   = re.compile(error_token, re.IGNORECASE)
+        warn_pattern    = re.compile(warn_token, re.IGNORECASE)
 
         start_time  = time.time()
         end_time    = start_time + runtime
@@ -249,33 +218,29 @@ class Monitor:
         summary     = []
         
         try:
-            # with serial.Serial(comport, baudrate, timeout=runtime) as ser:
             with open(report_file, 'w') as filehandle:
                 while (time.time() < end_time) and not (start_found and end_found):
                     try:
                         line = serial_object.readline().decode().strip()
-                        print(line, flush = True)
+                        # print(line, flush = True)
                     except:
-                        return errors, warnings, summary #, start_found, end_found
+                        return errors, warnings, summary, start_found, end_found
                     
-                    if re.search(start_tag, line, re.IGNORECASE) and not end_found:
+                    if re.search(start_token, line, re.IGNORECASE) and not end_found:
                         start_found = True
 
-                    if re.search(end_tag, line, re.IGNORECASE) and start_found:
+                    if re.search(end_token, line, re.IGNORECASE) and start_found:
                         end_found = True
 
                     if start_found:
                         print(line, flush = True, file = filehandle)
-                        # print(line, flush = True)
+                        print(line, flush = True)
 
                         if error_pattern.search(line):
                             errors.append(line)
 
                         if warn_pattern.search(line):
                             warnings.append(line)
-
-                        # if summary_pattern.search(line):
-                        #     summary = number_pattern.findall(line)
 
         except:
             pass
@@ -284,35 +249,32 @@ class Monitor:
         return errors, warnings, summary, start_found, end_found
 
 
-    def parseExampleOutput(self, serial_object = None, baudrate = 115200, runtime = 30, start_tag = ".*", end_tag = ".*",
-    # def parseExampleOutput(self, comport = "", baudrate = 115200, runtime = 30, start_tag = ".*", end_tag = ".*",
-                           error_tag = "ERROR|FATAL", warn_tag = "WARNING", report_file = "example.log"):
+    def parseExampleOutput(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = ".*", end_token = ".*",
+                           error_token = "ERROR|FATAL", warn_token = "WARNING", report_file = "example.log"):
         """
         Function collects data from the serial port either for the period of the runtime or
-        if for all between begin and end tags
+        if for all between begin and end tokens
 
             Parameters:
             -----------
-                comport (str)     : A string representing the device's comport.
-                baudrate (int)    : The baud speed rate for this serial port.
-                runtime (int)     : The maximum time to collect data from the port.
-                start_tag (str)   : Begin tag to start parsing output.
-                end_tag (str)     : End tag to stop parsing data.
-                error_tag (str)   : The tag for an error message.
-                warn_tag (str)    : The tag for a warning message.
-                report_file (str) : Name of output log file.
+                serial_object (obj) : The serial object related to the device's comport.
+                baudrate (int)      : The baud speed rate for this serial port.
+                runtime (int)       : The maximum time to collect data from the port.
+                start_token (str)     : Begin token to start parsing output.
+                end_token (str)       : End token to stop parsing data.
+                error_token (str)     : The token for an error message.
+                warn_token (str)      : The token for a warning message.
+                report_file (str)   : Name of output log file.
 
             Returns:
             --------
                 errors (list)             : List of error messages.
                 warnings (list)           : List of warning messages.
                 summary (list)            : Summary list, i.e. total number of tests, number of failed as well as ignored tests.
-                # start tag found (boolean) : Wether the start tag has been found.
-                # end tag found (boolean)   : Wether the end tag has been found.
+                # start token found (boolean) : Wether the start token has been found.
+                # end token found (boolean)   : Wether the end token has been found.
         """
-        # error_list, warn_list, summary = self.read_example_serial(comport, baudrate, runtime, error_tag, warn_tag, report_file)
-        error_list, warn_list, summary, start_found, end_found = self.read_example_serial(serial_object, baudrate, runtime, start_tag, end_tag, error_tag, warn_tag, report_file)
-        # error_list, warn_list, summary, start_found, end_found = self.read_example_serial(comport, baudrate, runtime, start_tag, end_tag, error_tag, warn_tag, report_file)
+        error_list, warn_list, summary, start_found, end_found = self.read_example_serial(serial_object, baudrate, runtime, start_token, end_token, error_token, warn_token, report_file)
 
         if start_found and end_found:
             if len(summary) == 2:
@@ -335,7 +297,7 @@ class Monitor:
                 print(f"\nFailed to find summary in output. Make sure to have set the correct port and baudrate.\n")
 
         else:
-            print(f'\nFailed to read example output ! {"Start" if not start_found else "End"} tag not found !\nMake sure to have set the correct port and baudrate.\n')
+            print(f'\nFailed to read example output ! {"Start" if not start_found else "End"} token not found !\nMake sure to have set the correct port and baudrate.\n')
 
 
         # return( 1 if (len(summary) == 2 and int(summary[1]) > 0) or (len(summary) != 2) else 0 )

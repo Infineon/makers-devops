@@ -1,6 +1,13 @@
 from schema import And, Or, Use, Optional
 
 projectYAMLSchema = {
+    Optional("options"): {
+                            Optional("USE_CORE") : { 
+                                                     "name": Or("local", str),
+                                                     Optional("url"): str,
+                            },
+    },
+    
     Optional("compile"): {
         str: {
                 "description": str,
@@ -24,6 +31,7 @@ projectYAMLSchema = {
                   "command": str,
                   "query": str,
                   "working_dir": str,
+                  Optional("options"): { str : str }
              } ]
     },
 
@@ -33,6 +41,19 @@ projectYAMLSchema = {
                   "command": str,
                   "query": str,
                   "working_dir": str,
+                  Optional("options"): Or( None,
+                                        #    And(
+                                               {
+                                                    Optional("SEND_JOB_START_TOKEN") : bool,
+                                                    Optional("PARSE_START_TOKEN") : str,
+                                                    Optional("PARSE_END_TOKEN") : str,
+                                                    Optional("USE_CORE") : { 
+                                                                              "name": Or("local", str),
+                                                                              Optional("url"): str,
+                                                    },
+                                               }
+                                        #    )
+                  )
              } ]
     },
     
