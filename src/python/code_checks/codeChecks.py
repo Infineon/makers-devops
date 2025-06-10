@@ -168,7 +168,7 @@ if __name__ == "__main__":
                 if "local" in useCore:
                     returnCode |= subprocess.run(
                         [
-                            "extras/makers-devops/bin/setup_container.sh",
+                            "extras/makers-devops/bin/install_arduino_core.sh",
                             "-c", "local"
                         ]
                     ).returncode
