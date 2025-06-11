@@ -134,7 +134,7 @@ jobs:
 
       - name: Generate Reports
         run: |
-          extras/makers-devops/tools/code_checks/generate_reports.sh _results
+          extras/makers-devops/tools/code_checks/run_generate_reports.sh _results
 
       - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
