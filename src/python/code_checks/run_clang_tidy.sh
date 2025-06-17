@@ -27,7 +27,7 @@ fi
 eval set -- "$TEMP"
 
 checks=
-config_file="--config-file=extras/makers-devops/configs/clang-tidy/.clang-tidy"
+config_file="--config-file=extras/makers-devops/config/clang-tidy/.clang-tidy"
 excludes=
 export_fixes=
 extra_arg=
@@ -43,16 +43,15 @@ use_color=
 use_shell_color=false
 warnings_as_errors=
 
-
 while true; do
   case "$1" in
-         --checks )              checks="--check=$2";                           shift 2 ;;
+         --checks )              checks="-checks=$2";                           shift 2 ;;
          --config-file )         config_file="--config-file=$2";                shift 2 ;;
          --export-fixes )        export_fixes="--export-fixes=$2";              shift 2 ;;
          --extra-arg )           extra_arg+=" --extra-arg=$2";                  shift 2 ;;
          --file-prefix )         file_prefix=$2;                                shift 2 ;;
          --fix )                 fix="--fix";                                   shift ;;
-         --header-filter )       header_filter="--header-filter=$2";            shift 2 ;;
+         --header-filter )       header_filter+="--header-filter=$2";            shift 2 ;;
     -I )                         includes+=" -I $2";                            shift 2 ;;
     -i )                         excludes+=" -isystem $2";                      shift 2 ;;
     -o | --output-dir )          output_dir=$2;                                 shift 2 ;;
@@ -109,6 +108,24 @@ for pattern in $*; do
     file_list=`find $pattern -regextype egrep -regex '.*\.(c|cpp|h|hpp)'`
 
     for file in $file_list; do
+        
+        skip=0
+        for exclude_path in $excludes; do
+            if [[ $exclude_path == "-isystem" ]]; then
+                continue
+            fi
+
+            if [[ $(realpath "$file") == $(realpath "$exclude_path")/* ]]; then
+                echo "Skipping excluded file: $file"
+                skip=1
+                break
+            fi
+        done
+
+        if [ $skip == 1 ]; then
+            continue
+        fi
+
         file_base=`basename $file`
 
         $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors $file -- $excludes $includes 2>&1 | tee $output_dir/$file_prefix.$file_base.log
