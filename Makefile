@@ -3,9 +3,9 @@ FQBN   ?= infineon:psoc6:cy8ckit_062s2_ai
 TARGET ?= test_interrupts_single
 
 ##############################################################################################################################################################
-CLANGTIDY_OUTPUT=_results/clang-tidy/check-clang-tidy
-CPPCHECK_OUTPUT=_results/cppcheck/check-cppcheck
-
+RESULT_DIRECTORY=_results
+CLANGTIDY_OUTPUT=$(RESULT_DIRECTORY)/clang-tidy/check-clang-tidy
+CPPCHECK_OUTPUT=$(RESULT_DIRECTORY)/cppcheck/check-cppcheck
 ##############################################################################################################################################################
 
 TAG=latest
@@ -25,6 +25,7 @@ CODECHECK=extras/makers-devops/tools/code_checks/codeChecks.py
 MERGEXML=extras/makers-devops/tools/code_checks/merge_clang_tidy_cppcheck.py
 PROJECTYAML=config/project.yml
 USERYAML=config/user.yml
+GENERATEREPORT=./extras/makers-devops/tools/code_checks/run_generate_reports.sh
 
 pull-container: 
 	docker pull $(REGISTRY)
@@ -34,22 +35,27 @@ run-container-check-all: pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllChecks
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runAllChecks
 
-run-container-cppcheck: pull-container
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck check-cppcheck 
+run-container-source-cppcheck: pull-container
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck source-code-quality-cppcheck 
 
-run-container-clang-tidy-check: pull-container
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck check-clang-tidy 
+run-container-source-clang-tidy-check: pull-container
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck source-code-quality-clang-tidy 
+
+run-container-test-cppcheck: pull-container
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck test-code-quality-cppcheck 
+
+run-container-test-clang-tidy-check: pull-container
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck test-code-quality-clang-tidy 
 
 run-container-clang-tidy-format: pull-container
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck clang-format
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck code-quality-clang-format
 
 run-container-black-format:
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck black-format
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck code-quality-black-format
 
 run-container-generate-html-report: pull-container
-	$(DOCKER) python3 $(MERGEXML) --logDir=$(CLANGTIDY_OUTPUT) --xmlPath=$(CPPCHECK_OUTPUT)/check-cppcheck-errors.xml 
-	$(DOCKER) cppcheck-htmlreport --file=$(CPPCHECK_OUTPUT)/check-cppcheck-errors.xml --title=CPPCheck --report-dir=$(CPPCHECK_OUTPUT)/html-report --source-dir=. 2>&1 | tee -a $(CPPCHECK_OUTPUT)/check-cppcheck.log
-	firefox _results/cppcheck/check-cppcheck/html-report/index.html
+	$(DOCKER) $(GENERATEREPORT) --results-dir $(RESULT_DIRECTORY)
+#	firefox _results/cppcheck/check-cppcheck/html-report/index.html
 
 ##############################################################################################################################################################
 

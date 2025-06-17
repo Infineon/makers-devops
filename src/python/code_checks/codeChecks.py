@@ -181,7 +181,7 @@ if __name__ == "__main__":
                     else:
                         returnCode |= subprocess.run(
                             [
-                                "extras/makers-devops/bin/setup_container.sh",
+                                "extras/makers-devops/bin/install_arduino_core.sh",
                                 "-c", coreName,
                                 "-u", useCore["url"],
                             ]
