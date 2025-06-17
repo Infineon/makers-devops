@@ -1,4 +1,4 @@
 {
     "script": "misra.py",
-    "args": [ "--rule-texts=./extras/makers-devops/configs/cppcheck/misra.txt" ]
+    "args": [ "--rule-texts=./extras/makers-devops/config/cppcheck/misra.txt" ]
 }
