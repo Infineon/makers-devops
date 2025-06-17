@@ -86,7 +86,7 @@ jobs:
           echo "matrix.checks   : ${{ matrix.checks }}"
           echo ""
 
-          runQuery.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} 2>&1 | tee output.log
+          hilChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} --dockerTag=test  2>&1 | tee output.log
 
       - name: Archive code check reports
         if: success() || failure()

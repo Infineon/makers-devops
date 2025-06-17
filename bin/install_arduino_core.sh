@@ -72,9 +72,9 @@ fi
 
 
 udevDir=`find ~/.arduino15/packages/infineon/tools/openocd -name udev_rules`
-install_psoc6_udev.sh ${udevDir}
+/opt/makers-hil/bin/install_psoc6_udev.sh ${udevDir}
 
-install_segger_udev.sh /opt/SEGGER/JLink/
+/opt/makers-hil/bin/install_segger_udev.sh /opt/SEGGER/JLink/
 
 arduino-cli core update-index
 arduino-cli board list
