@@ -49,6 +49,9 @@ def parseArgs():
     parser.add_argument(
         "--port", type=str, required=False, help="Port of device to be compiled or tested."
     )
+    parser.add_argument(
+        "--serial", type=str, required=False, help="Serial ID of device to be compiled or tested."
+    )
 
     args = parser.parse_args()
 
@@ -116,7 +119,7 @@ def runCheck(projectYAML, checkType=None, check=None, checkIndex=0):
             [
                 "extras/makers-devops/bin/run_command.sh",
                 "-w", f"{projectYAML[checkType][check][checkIndex]['working_dir']}",
-                "-c", f"{projectYAML[checkType][check][checkIndex]['command']} FQBN={args.fqbn} PORT={args.port}",
+                "-c", f"{projectYAML[checkType][check][checkIndex]['command']} FQBN={args.fqbn} PORT={args.port} SERIAL={args.serial}",
             ]
         ).returncode
 
@@ -132,7 +135,7 @@ def runCheck(projectYAML, checkType=None, check=None, checkIndex=0):
             [
                 "extras/makers-devops/bin/run_command.sh",
                 "-w", f"{projectYAML[checkType][check][checkIndex]['working_dir']}",
-                "-c", f"{projectYAML[checkType][check][checkIndex]['command']} FQBN={args.fqbn} PORT={args.port}",
+                "-c", f"{projectYAML[checkType][check][checkIndex]['command']} FQBN={args.fqbn} PORT={args.port} SERIAL={args.serial}",
             ]
         ).returncode
 
