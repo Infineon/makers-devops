@@ -133,7 +133,7 @@ jobs:
 
       - name: Generate Reports
         run: |
-          extras/makers-devops/src/python/code_checks/run_generate_reports.sh _results
+          extras/makers-devops/src/python/code_checks/run_generate_reports.sh  --results-dir _results
 
       - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
