@@ -21,11 +21,11 @@ REGISTRY=$(DOCKER_REGISTRY)
 # Therefore, we set myLocalWorkingDir to the root of the repository
 DOCKER=docker run --rm -it -v $(PWD)/../..:/myLocalWorkingDir:rw $(REGISTRY)
 
-CODECHECK=extras/makers-devops/tools/code_checks/codeChecks.py
-MERGEXML=extras/makers-devops/tools/code_checks/merge_clang_tidy_cppcheck.py
+CODECHECK=extras/makers-devops/src/python/code_checks/codeChecks.py
+MERGEXML=extras/makers-devops/src/python/code_checks/merge_clang_tidy_cppcheck.py
 PROJECTYAML=config/project.yml
 USERYAML=config/user.yml
-GENERATEREPORT=./extras/makers-devops/tools/code_checks/run_generate_reports.sh
+GENERATEREPORT=./extras/makers-devops/src/python/code_checks/run_generate_reports.sh
 
 pull-container: 
 	docker pull $(REGISTRY)
