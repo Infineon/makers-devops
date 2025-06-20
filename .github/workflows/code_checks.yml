@@ -123,7 +123,16 @@ jobs:
 
       - name: Normalize tool result directories
         run: |
-          extras/makers-devops/src/python/code_checks/run_generate_reports.sh _results
+          for d in _results/*/*/; do
+            tool=$(basename "$d")
+            mkdir -p "_results/$tool"
+            shopt -s dotglob nullglob
+            mv "$d"* "_results/$tool/" || true
+          done
+
+      - name: Generate HTML Reports
+        run: |
+          extras/makers-devops/src/python/code_checks/run_generate_reports.sh  --results-dir _results
 
       - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
