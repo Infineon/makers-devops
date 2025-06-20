@@ -6,7 +6,7 @@ echo "executing $* ..."
 
 usage() {
   echo "Usage: $0 :" 1>&2;
-  echo "          [--checks] <Checks.>  [--config-file] <Config-file.>  [--export-fixes] <Export fixes.>  [--extra-arg] <Extra argument.>  [--file-prefix] <File_prefix>  [--fix] <Fix reported issues.>" 1>&2;
+  echo "          [--checks] <Checks.>  [--config-file] <Config-file.> [--export-fixes] <Export fixes.>  [--extra-arg] <Extra argument.>  [--file-prefix] <File_prefix>  [--fix] <Fix reported issues.>" 1>&2;
   echo "          [--header-filter] <Header filter regex for headers to be processed.>  [-I] <Directory to search for include files.>  [-i] <Source files or directory not to be processed.>" 1>&2;
   echo "          [-o | --output-dir] <output directory>  [--quiet] <Quiet.>  [--system-headers] <Process system headers.>  [--use-color] <Use color.>  [--use-shell-color] <Use color in terminal.>" 1>&2;
   echo "          [--warnings-as-errors]  <Upgrade warnings to errors for specified checks.> " 1>&2;
@@ -46,13 +46,13 @@ warnings_as_errors=
 
 while true; do
   case "$1" in
-         --checks )              checks="--checks=$2";                           shift 2 ;;
+         --checks )              checks="--checks=$2";                          shift 2 ;;
          --config-file )         config_file="--config-file=$2";                shift 2 ;;
          --export-fixes )        export_fixes="--export-fixes=$2";              shift 2 ;;
          --extra-arg )           extra_arg+=" --extra-arg=$2";                  shift 2 ;;
          --file-prefix )         file_prefix=$2;                                shift 2 ;;
          --fix )                 fix="--fix";                                   shift ;;
-         --header-filter )       header_filter="--header-filter=$2";            shift 2 ;;
+         --header-filter )       header_filter+="--header-filter=$2";           shift 2 ;;
     -I )                         includes+=" -I $2";                            shift 2 ;;
     -i )                         excludes+=" -isystem $2";                      shift 2 ;;
     -o | --output-dir )          output_dir=$2;                                 shift 2 ;;
@@ -114,6 +114,8 @@ for pattern in $*; do
 
         $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors "$file" -- $excludes $includes 2>&1 | tee "$output_dir/$file_prefix.$file_base.log"
 
+      file_base=$(basename "$file")
+        $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors "$file" -- $excludes $includes 2>&1 | tee "$output_dir/$file_prefix.$file_base.log"
         fileReturnValue=${PIPESTATUS[0]}
 
         echo "" | tee -a "$output_dir/$file_prefix.$file_base.log"
@@ -126,7 +128,7 @@ for pattern in $*; do
 done
 
 
-chown -R --reference=. _results
+chown -R --reference=. $output_dir
 
 echo "$0 done."
 exit $returnValue
