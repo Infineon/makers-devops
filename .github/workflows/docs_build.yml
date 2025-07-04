@@ -18,6 +18,12 @@ name: Build docs
 
 on:
   workflow_call:
+    inputs:
+      doxy-required:
+        required: false
+        type: boolean
+        default: false
+        description: 'Set to true if Doxygen is required for building the docs.'
 
 jobs:
   build-docs:
@@ -26,7 +32,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
+    - name: Install Doxygen
+      if: ${{ inputs.doxy-required }}
+      run: sudo apt-get update && sudo apt-get install -y doxygen
     - name: Install required Python packages
       run: pip install -r docs/requirements.txt
     - name: Build docs from Makefile
       run: make -C docs/ html
+    - name: Upload docs
+      uses: actions/upload-artifact@v4
+      with:
+        name: html-docs
+        path: docs/build/
