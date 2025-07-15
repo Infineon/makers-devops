@@ -52,7 +52,7 @@ while true; do
          --extra-arg )           extra_arg+=" --extra-arg=$2";                  shift 2 ;;
          --file-prefix )         file_prefix=$2;                                shift 2 ;;
          --fix )                 fix="--fix";                                   shift ;;
-         --header-filter )       header_filter+="--header-filter=$2";           shift 2 ;;
+         --header-filter )       header_filter="--header-filter=$2";           shift 2 ;;
     -I )                         includes+=" -I $2";                            shift 2 ;;
     -i )                         excludes+=" -isystem $2";                      shift 2 ;;
     -o | --output-dir )          output_dir=$2;                                 shift 2 ;;
