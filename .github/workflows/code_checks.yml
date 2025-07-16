@@ -70,7 +70,9 @@ jobs:
       - name: Checkout repository (recursive submodules)
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: true
+          fetch-tags: true
+          fetch-depth: 0
 
       - name: Run code check (${{ matrix.checks }})
         id: run_build
