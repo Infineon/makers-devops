@@ -75,7 +75,7 @@ jobs:
           fetch-tags: true
           fetch-depth: 0
 
-      - name: Run code check (${{ matrix.checks }})
+      - name: Run HIL check (${{ matrix.checks }})
         id: run_build
         run: |
           echo "Workflow has these parameters :"
@@ -84,14 +84,14 @@ jobs:
 
           hilChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} --dockerTag=latest  2>&1 | tee output.log
 
-      - name: Archive code check reports
+      - name: Archive HIL check reports
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.checks }}
           path: _results
 
-      - name: Append code checks output to summary
+      - name: Append HIL checks output to summary
         if: success() || failure()
         run: |
           echo "<details>" >> $GITHUB_STEP_SUMMARY
