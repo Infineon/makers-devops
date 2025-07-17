@@ -54,12 +54,12 @@ if [ "$core" = "local" ]; then
         rm -rf build
     fi
 
-    python3 extras/arduino-devops/arduino-packager.py clean
+    bash tools/dev-setup.sh
 
     python3 extras/arduino-devops/arduino-packager.py --no-previous-releases
     returnValue=$(($returnValue | $?))
 
-    python3 extras/arduino-devops/pckg-install-local.py --pckg-dir build --verbose
+    python3 extras/arduino-devops/pckg-install-local.py --pckg-dir build
     returnValue=$(($returnValue | $?))
 
     chown -R --reference=. build
