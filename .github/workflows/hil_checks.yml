@@ -72,9 +72,6 @@ jobs:
       - name: Run hil check (${{ matrix.checks }})
         id: run_build
         run: |
-          pwd
-          git log -n 10 --oneline
-          git describe --tags
           echo "Workflow has these parameters :"
           echo "matrix.checks   : ${{ matrix.checks }}"
           echo ""
