@@ -54,6 +54,7 @@ if [ "$core" = "local" ]; then
         rm -rf build
     fi
 
+    python3 extras/arduino-devops/arduino-packager.py clean
     bash tools/dev-setup.sh
 
     python3 extras/arduino-devops/arduino-packager.py --no-previous-releases
