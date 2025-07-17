@@ -59,7 +59,7 @@ if [ "$core" = "local" ]; then
     python3 extras/arduino-devops/arduino-packager.py --no-previous-releases
     returnValue=$(($returnValue | $?))
 
-    python3 extras/arduino-devops/pckg-install-local.py --pckg-dir build
+    python3 extras/arduino-devops/pckg-install-local.py --pckg-dir build --verbose
     returnValue=$(($returnValue | $?))
 
     chown -R --reference=. build
