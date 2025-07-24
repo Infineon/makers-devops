@@ -1,158 +1,124 @@
-import os
-import re
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
-import argparse
+#!/bin/bash
 
-def create_results_xml(file_path):
-    """
-    This function is used to initialize the XML file where code check results will be appended.
-    It creates an XML file with a root element named "results" and a version attribute set to "2".
-    
-    Args:
-        file_path (str): The path where the XML file will be created.
-    """
-    # Create the root element
-    root = ET.Element("results")
-    root.set("version", "2")
+echo "Executing $* ..."
 
-    # Create an ElementTree object from the root
-    tree = ET.ElementTree(root)
+usage() {
+  echo "Usage: $0 [--results-dir] <Results directory> [--merge-script] <Path to merge script> [--source-dir] <Source directory>" 1>&2
+  exit 1
+}
 
-    # Write the XML to the specified file with the proper declaration
-    with open(file_path, "wb") as f:
-        tree.write(f, encoding="utf-8", xml_declaration=True)
+TEMP=`getopt -o r:m:s: --long results-dir:,merge-script:,source-dir: -n "$0" -- "$@"`
+if [ $? != 0 ]; then
+  echo "Terminating..." >&2
+  usage
+  exit 1
+fi
 
-def append_code_check_xml_to_results_xml(output_xml_path, xml_file):
-    tree = ET.parse(output_xml_path)
-    root = tree.getroot()
-    xml_tree = ET.parse(xml_file)
-    xml_root = xml_tree.getroot()
+eval set -- "$TEMP"
 
-    for child in xml_root:
-        root.append(child)
+results_dir=""
+merge_script="extras/makers-devops/src/python/code_checks/merge_clang_tidy_cppcheck.py"
+source_dir="."
 
-    # Write back the updated results.xml
-    tree.write(output_xml_path, encoding="utf-8", xml_declaration=True)
+while true; do
+  case "$1" in
+    --results-dir ) results_dir=$2; shift 2 ;;
+    --merge-script ) merge_script=$2; shift 2 ;;
+    --source-dir ) source_dir=$2; shift 2 ;;
+    -- ) shift; break ;;
+    * ) echo "Unknown option '$1' found!"; usage; break ;;
+  esac
+done
 
-def parse_clang_tidy_log(file_path):
-    errors = []
-    with open(file_path, "r") as file:
-        content = file.read()
+if [ -z "$results_dir" ]; then
+  echo "Error: --results-dir is required."
+  usage
+fi
 
-    # Regular expressions to match errors and warnings
-    pattern = re.compile(r"(?P<type>error|warning): (?P<msg>.+?) \[(?P<id>[\w\-]+)\]")
-    location_pattern = re.compile(r"(.+?):(\d+):(\d+):")
+html_report_base_dir="${results_dir}/html-reports"
+mkdir -p "${html_report_base_dir}"
 
-    for match in pattern.finditer(content):
-        location_match = location_pattern.search(content, match.start())
-        if location_match:
-            file_path, line, column = location_match.groups()
-            errors.append(
-                {
-                    "type": match.group("type"),
-                    "msg": match.group("msg"),
-                    "id": match.group("id"),
-                    "file": file_path,
-                    "line": line,
-                    "column": column,
-                }
-            )
+echo ""
+echo "results-dir        : $results_dir"
+echo "merge-script       : $merge_script"
+echo "source-dir         : $source_dir"
+echo ""
 
-    return errors
+# Collect cppcheck XML files and clang-tidy directories into arrays
+declare -A cppcheck_reports
+declare -A clang_tidy_reports
 
+# Find cppcheck XML files for each group (source, library, test, etc.)
+if [ -d "${results_dir}/cppcheck" ]; then
+  for file in $(find "${results_dir}/cppcheck" -name "*.xml"); do
+    group=$(basename "$(dirname "${file}")" | sed -E 's/-cppcheck.*//') # Extract group name (e.g., source, examples, test)
+    cppcheck_reports["${group}"]="${cppcheck_reports[${group}]} ${file}"
+  done
+fi
 
-def append_clang_tidy_results_to_xml(output_xml_path, clang_tidy_results):
-    tree = ET.parse(output_xml_path)
-    root = tree.getroot()
+# Find clang-tidy directories for each group
+if [ -d "${results_dir}/clang-tidy" ]; then
+  for dir in $(find "${results_dir}/clang-tidy" -type d -name "*-clang-tidy"); do
+    group=$(basename "${dir}" | sed -E 's/-clang-tidy//') # Extract group name (e.g., source, library, test)
+    clang_tidy_reports["${group}"]="${clang_tidy_reports[${group}]} ${dir}"
+  done
+fi
 
-    # Check if clang-tidy section exists, else create it
-    clang_tidy_section = root.find("clang-tidy")
-    if clang_tidy_section is None:
-        clang_tidy_section = ET.SubElement(root, "clang-tidy", version="2.17 dev")
-        ET.SubElement(clang_tidy_section, "errors")
+# Check if any reports are found
+if [ ${#cppcheck_reports[@]} -eq 0 ] && [ ${#clang_tidy_reports[@]} -eq 0 ]; then
+  echo "Error: No cppcheck or clang-tidy reports found in ${results_dir}. Exiting."
+  exit 1
+fi
 
-    errors_section = clang_tidy_section.find("errors")
-    existing_errors = set()
+# Print collected tool reports for debugging
+echo "Found cppcheck reports:"
+for group in "${!cppcheck_reports[@]}"; do
+  echo "  ${group}: ${cppcheck_reports[$group]}"
+done
 
-    for result in clang_tidy_results:
-        unique_id = (
-            result["file"],
-            result["line"],
-            result["column"],
-            result["msg"],
-            result["type"],
-            "clang-tidy-" + result["id"],
-        )
-        if unique_id not in existing_errors:
-            existing_errors.add(unique_id)
-            error_element = ET.SubElement(
-                errors_section,
-                "error",
-                {
-                    "id": "clang-tidy-" + result["id"],
-                    "severity": result["type"],
-                    "msg": result["msg"],
-                    "verbose": result["msg"],
-                },
-            )
-            location_element = ET.SubElement(
-                error_element,
-                "location",
-                {
-                    "file": result["file"],
-                    "line": result["line"],
-                    "column": result["column"],
-                },
-            )
+echo "Found clang-tidy reports:"
+for group in "${!clang_tidy_reports[@]}"; do
+  echo "  ${group}: ${clang_tidy_reports[$group]}"
+done
 
-    # Pretty-print the XML
-    xml_str = ET.tostring(root, encoding="unicode")
-    pretty_xml_str = minidom.parseString(xml_str).toprettyxml(indent="    ")
+# Process each group and generate reports
+for group in "${!cppcheck_reports[@]}" "${!clang_tidy_reports[@]}"; do
+  merged_report_xml="${results_dir}/${group}-code-check.xml"
+  html_report_dir="${html_report_base_dir}/${group}"
 
-    with open(output_xml_path, "w") as file:
-        file.write(pretty_xml_str)
+  cppcheck_xml_files=${cppcheck_reports[$group]}
+  clang_tidy_dirs=${clang_tidy_reports[$group]}
 
+  echo "Processing group: ${group}"
+  echo "  cppcheck reports: ${cppcheck_xml_files}"
+  echo "  clang-tidy directories: ${clang_tidy_dirs}"
 
-def main(clang_tidy_log_dir, cppcheck_xml_path, output_xml_path):
-    create_results_xml(output_xml_path)
+  # Merge reports using the Python script
+  if [ ! -f "${merge_script}" ]; then
+    echo "Error: Merge script not found at ${merge_script}. Exiting."
+    exit 1
+  fi
 
-    if cppcheck_xml_path != "":
-        append_code_check_xml_to_results_xml(output_xml_path, cppcheck_xml_path)
-        
-    if clang_tidy_log_dir != "":
-        clang_tidy_results = []
+  echo "Merging tool reports for group '${group}' into a single XML..."
+  python3 "${merge_script}" \
+    --logDir="$(echo ${clang_tidy_dirs} | tr ' ' ',')" \
+    --xmlPath="$(echo ${cppcheck_xml_files} | tr ' ' ',')" \
+    --outputPath="${merged_report_xml}"
 
-        for log_file in os.listdir(clang_tidy_log_dir):
-            if log_file.endswith(".log"):
-                log_path = os.path.join(clang_tidy_log_dir, log_file)
-                results = parse_clang_tidy_log(log_path)
-                clang_tidy_results.extend(results)
+  # Generate HTML report for this group
+  echo "Generating HTML report for group '${group}'..."
+  mkdir -p "${html_report_dir}"
+  cppcheck-htmlreport \
+    --file="${merged_report_xml}" \
+    --title="Code Check Report - ${group}" \
+    --report-dir="${html_report_dir}" \
+    --source-dir="${source_dir}"
 
-        append_clang_tidy_results_to_xml(output_xml_path, clang_tidy_results)
+  echo "HTML report for group '${group}' available at: ${html_report_dir}"
+done
 
+# Set permissions
+chown -R --reference=. "${html_report_base_dir}"
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Parse clang-tidy logs and append results to cppcheck XML file."
-    )
-    parser.add_argument(
-        "--logDir",
-        type=str,
-        default="",
-        help="Directory containing clang-tidy log files.",
-    )
-    parser.add_argument(
-        "--xmlPath",
-        type=str,
-        default="",
-        help="Path to the cppcheck XML file.",
-    )
-    parser.add_argument(
-        "--outputPath",
-        type=str,
-        required=True,
-        help="Path to the output XML file to append results.",
-    )
-    args = parser.parse_args()
-    main(args.logDir, args.xmlPath, args.outputPath)
+echo "$0 done."
+exit 0
