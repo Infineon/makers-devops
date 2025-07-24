@@ -66,6 +66,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-tags: true
+          fetch-depth: 0
 
       - name: Run hil check (${{ matrix.checks }})
         id: run_build
