@@ -84,7 +84,7 @@ jobs:
 
           hilChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} --dockerTag=latest  2>&1 | tee output.log
 
-      - name: Archive code check reports
+      - name: Archive HIL check reports
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
