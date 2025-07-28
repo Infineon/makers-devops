@@ -50,17 +50,15 @@ projectYAMLSchema = {
                   "query": str,
                   "working_dir": str,
                   Optional("options"): Or( None,
-                                        #    And(
-                                               {
-                                                    Optional("SEND_JOB_START_TOKEN") : bool,
-                                                    Optional("PARSE_START_TOKEN") : str,
-                                                    Optional("PARSE_END_TOKEN") : str,
-                                                    Optional("USE_CORE") : { 
-                                                                              "name": Or("local", str),
-                                                                              Optional("url"): str,
-                                                    },
-                                               }
-                                        #    )
+                                           {
+                                             Optional("SEND_JOB_START_TOKEN") : bool,
+                                             Optional("PARSE_START_TOKEN") : str,
+                                             Optional("PARSE_END_TOKEN") : str,
+                                             Optional("USE_CORE") : { 
+                                                                      "name": Or("local", str),
+                                                                      Optional("url"): str,
+                                             },
+                                           }
                   )
              } ]
     },
