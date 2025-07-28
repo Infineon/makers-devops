@@ -67,5 +67,5 @@ if [ -d "build" ]; then
   chown -R --reference=. build
 fi
 
-echo "$0 done."
+echo "$0 done returning $returnValue."
 exit $returnValue

@@ -54,3 +54,4 @@ unit-test:
         options:
           PARSE_START_TAG: Unity test run
           PARSE_END_TAG: "^OK|^FAIL"
+
