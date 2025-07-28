@@ -26,7 +26,7 @@ fi
 eval set -- "$TEMP"
 
 addon=
-addon_default="--addon=extras/makers-devops/configs/cppcheck/misra.json --addon=misc"
+addon_default="--addon=extras/makers-devops/config/cppcheck/misra.json --addon=misc"
 check_level="--check-level=exhaustive"
 enable=
 enable_default="--enable=information,missingInclude,performance,portability,style,warning"

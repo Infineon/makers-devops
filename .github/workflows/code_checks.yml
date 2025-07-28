@@ -1,3 +1,7 @@
+# =========================================================
+# GitHub Actions Workflow: Code Quality Checks
+# =========================================================
+
 name: Code Quality Checks
 
 on:
@@ -16,32 +20,28 @@ defaults:
   run:
     shell: bash
 
+# =========================================================
+# Job: setup
+#   - Prepares the code check matrix
+# =========================================================
 jobs:
   setup:
     runs-on: ubuntu-24.04
-
     container:
       image: docker.io/ifxmakers/makers-docker:latest
-
-      # image: ghcr.io/infineon/makers-docker:latest
-      # credentials:
-        # username: ${{ github.actor }}
-        # password: ${{ secrets.github_token }}
-
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
-
     steps:
-      - name: Checkout repository 
+      - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
         with:
           submodules: true
 
-      - name: Set strategy matrix
+      - name: Set strategy matrix (get all code checks)
         id: set-matrix
         run: |
-          eval $(python3 extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --getAllCodeChecks)
+          eval $(python3 extras/makers-devops/src/python/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --getAllCodeChecks)
 
       - name: Append Code Checks Output to Summary
         run: |
@@ -49,44 +49,36 @@ jobs:
 
     outputs:
       checks: ${{ steps.set-matrix.outputs.checks }}
-      
 
+# =========================================================
+# Job: codeChecks
+#   - Runs all code checks in parallel (matrix)
+# =========================================================
   codeChecks:
     runs-on: ubuntu-24.04
     needs: setup
-
     container:
       image: docker.io/ifxmakers/makers-docker:latest
-
-      # image: ghcr.io/infineon/makers-docker:latest
-      # credentials:
-        # username: ${{ github.actor }}
-        # password: ${{ secrets.github_token }}
-
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
-
     strategy:
       fail-fast: false
-
       matrix:
         checks: ${{ fromJson(needs.setup.outputs.checks) }}
-
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (recursive submodules)
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Run all code checks
+      - name: Run code check (${{ matrix.checks }})
         id: run_build
         run: |
           echo "Workflow has these parameters :"
           echo "matrix.checks   : ${{ matrix.checks }}"
           echo ""
-
-          python3 extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} > output.log
+          python3 extras/makers-devops/src/python/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} > output.log
 
       - name: Archive code check reports
         if: success() || failure()
@@ -102,55 +94,60 @@ jobs:
           cat output.log >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
 
-          
+# =========================================================
+# Job: GenerateAndUploadReports
+#   - Collects, generates, and uploads HTML reports
+#   - Deploys to GitHub Pages
+# =========================================================
   GenerateAndUploadReports:
     runs-on: ubuntu-24.04
     if: success() || failure()
     needs: codeChecks
-
     container:
       image: docker.io/ifxmakers/makers-docker:latest
-
-      # image: ghcr.io/infineon/makers-docker:latest
-      # credentials:
-        # username: ${{ github.actor }}
-        # password: ${{ secrets.github_token }}
-        
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
-
-    steps: 
-      - name: Checkout repository
+    steps:
+      - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
         with:
           submodules: true
 
-      - name: Download all artifacts
+      - name: Download all code check artifacts
         uses: actions/download-artifact@v4
         with:
           path: _results
 
-      - name: Generate Reports
+      - name: Normalize tool result directories
         run: |
-          extras/makers-devops/tools/code_checks/run_generate_reports.sh _results
+          for d in _results/*/*/; do
+            tool=$(basename "$d")
+            mkdir -p "_results/$tool"
+            shopt -s dotglob nullglob
+            mv "$d"* "_results/$tool/" || true
+          done
+
+      - name: Generate HTML Reports
+        run: |
+          extras/makers-devops/src/python/code_checks/run_generate_reports.sh  --results-dir _results
 
       - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: html-report
-          path: _results/html-report
+          path: _results/html-reports
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _results/html-report
-          keep_files: false 
+          publish_dir: _results/html-reports/source-code-quality
+          keep_files: false
 
-      - name: Display Report URL
-        run: |
+      -  name: Display Report URL in Workflow Summary
+         run: |
           REPORT_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          echo "**Deploying report to GitHub Pages**" >> $GITHUB_STEP_SUMMARY
-          echo "[View Code Quality Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
-          echo "URL: $REPORT_URL"  # Also print it in logs for visibility
+          echo "**Code Quality Report Published**" >> $GITHUB_STEP_SUMMARY
+          echo "[View Report Here]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
+          echo "URL: $REPORT_URL"

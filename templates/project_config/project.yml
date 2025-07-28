@@ -26,12 +26,12 @@ code-quality:
     code-quality-clang-tidy:
       description: clang-tidy check sources
       tool: clang-tidy 
-      command: extras/makers-devops/tools/code_checks/run_clang_tidy.sh -i src/excludes src/cpp/ok.cpp
+      command: extras/makers-devops/src/python/code_checks/run_clang_tidy.sh -i src/excludes src/cpp/ok.cpp
 
     code-quality-cppcheck:
       description: cppcheck check sources
       tool: cppcheck
-      command: extras/makers-devops/tools/code_checks/run_cppcheck.sh --no-suppress-default src/c/* src/cpp  
+      command: extras/makers-devops/src/python/code_checks/run_cppcheck.sh --no-suppress-default src/c/* src/cpp  
 
 
 example-test:
