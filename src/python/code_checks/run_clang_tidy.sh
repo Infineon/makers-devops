@@ -52,7 +52,7 @@ while true; do
          --extra-arg )           extra_arg+=" --extra-arg=$2";                  shift 2 ;;
          --file-prefix )         file_prefix=$2;                                shift 2 ;;
          --fix )                 fix="--fix";                                   shift ;;
-         --header-filter )       header_filter+="--header-filter=$2";           shift 2 ;;
+         --header-filter )       header_filter="--header-filter=$2";            shift 2 ;;
     -I )                         includes+=" -I $2";                            shift 2 ;;
     -i )                         excludes+=" -isystem $2";                      shift 2 ;;
     -o | --output-dir )          output_dir=$2;                                 shift 2 ;;
@@ -114,7 +114,7 @@ for pattern in $*; do
 
         $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors "$file" -- $excludes $includes 2>&1 | tee "$output_dir/$file_prefix.$file_base.log"
 
-      file_base=$(basename "$file")
+        file_base=$(basename "$file")
         $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors "$file" -- $excludes $includes 2>&1 | tee "$output_dir/$file_prefix.$file_base.log"
         fileReturnValue=${PIPESTATUS[0]}
 

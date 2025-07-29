@@ -29,7 +29,7 @@ GENERATEREPORT=./extras/makers-devops/src/python/code_checks/run_generate_report
 
 pull-container: 
 	docker pull $(REGISTRY)
-# 	find ./tools/code_checks/ -name "*.sh" -exec chmod +x {} \;
+# 	find ./src/python/code_checks/ -name "*.sh" -exec chmod +x {} \;
 	
 run-container-check-all: pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllChecks
