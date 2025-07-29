@@ -1,4 +1,8 @@
 
+options:
+  SEND_JOB_START_TOKEN: true
+
+
 compile:
     # build-arduino-wire-XMC4700:
     #   description: Compiling test_wire_connected1_pingpong.cpp for XMC4700 platform
@@ -41,8 +45,7 @@ example-test:
         query: tlx493d_w2b6 > 0 and type.str.startswith('xmc1100')
         working_dir: extras/arduino-xensiv-3d-magnetic-sensor-tlx493d
         options:
-          PARSE_START_TAG: Looping ...
-          PARSE_END_TAG: "count : 2"
+          SEND_JOB_START_TOKEN: true
 
 
 unit-test:
@@ -52,5 +55,5 @@ unit-test:
         query: description.str.contains('DPS310') and type.str.startswith('xmc1100')
         working_dir: extras/arduino-xensiv-3d-magnetic-sensor-tlx493d
         options:
-          PARSE_START_TAG: Unity test run
-          PARSE_END_TAG: "^OK|^FAIL"
+          SEND_JOB_START_TOKEN: true
+

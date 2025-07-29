@@ -52,7 +52,7 @@ while true; do
          --extra-arg )           extra_arg+=" --extra-arg=$2";                  shift 2 ;;
          --file-prefix )         file_prefix=$2;                                shift 2 ;;
          --fix )                 fix="--fix";                                   shift ;;
-         --header-filter )       header_filter="--header-filter=$2";           shift 2 ;;
+         --header-filter )       header_filter="--header-filter=$2";            shift 2 ;;
     -I )                         includes+=" -I $2";                            shift 2 ;;
     -i )                         excludes+=" -isystem $2";                      shift 2 ;;
     -o | --output-dir )          output_dir=$2;                                 shift 2 ;;
@@ -105,17 +105,21 @@ fileReturnValue=0
 returnValue=0
 
 for pattern in $*; do
-  shopt -s extglob
-  file_list=`find $pattern -regextype egrep -regex '.*\.(c|cpp|h|hpp)'`
-  shopt -u extglob
-  for file in $file_list; do
-    file_base=$(basename "$file")
-      $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors "$file" -- $excludes $includes 2>&1 | tee "$output_dir/$file_prefix.$file_base.log"
-      fileReturnValue=${PIPESTATUS[0]}
-      echo "" | tee -a "$output_dir/$file_prefix.$file_base.log"
-      [[ $fileReturnValue != 0 ]] && returnValue=2
+    shopt -s extglob
+    file_list=`find $pattern -regextype egrep -regex '.*\.(c|cpp|h|hpp)'`
+    shopt -u extglob
 
-  done
+    for file in $file_list; do
+        file_base=`basename $file`
+        $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors "$file" -- $excludes $includes 2>&1 | tee "$output_dir/$file_prefix.$file_base.log"
+        fileReturnValue=${PIPESTATUS[0]}
+        echo "" | tee -a "$output_dir/$file_prefix.$file_base.log"
+
+        if [ $fileReturnValue != 0 ]; then
+            returnValue=2
+        fi
+
+    done
 done
 
 

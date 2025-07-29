@@ -29,7 +29,7 @@ GENERATEREPORT=./extras/makers-devops/src/python/code_checks/run_generate_report
 
 pull-container: 
 	docker pull $(REGISTRY)
-	find ./src/python/code_checks/ -name "*.sh" -exec chmod +x {} \;
+# 	find ./src/python/code_checks/ -name "*.sh" -exec chmod +x {} \;
 	
 run-container-check-all: pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllChecks
@@ -39,7 +39,7 @@ run-container-source-cppcheck: pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck source-code-quality-cppcheck 
 
 run-container-source-clang-tidy-check: pull-container
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck source-code-quality-clang-tidy 
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck code-quality-clang-tidy 
 
 run-container-test-cppcheck: pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck test-code-quality-cppcheck 
@@ -56,6 +56,15 @@ run-container-black-format:
 run-container-generate-html-report: pull-container
 	$(DOCKER) $(GENERATEREPORT) --results-dir $(RESULT_DIRECTORY)
 #	firefox _results/cppcheck/check-cppcheck/html-report/index.html
+
+
+##############################################################################################################################################################
+
+test_project_schemata:
+	$(DOCKER) python3 src/python/check_schemata/checkProjectYAMLSchema.py
+	$(DOCKER) python3 src/python/check_schemata/checkUserYAMLSchema.py
+
+##############################################################################################################################################################
 
 ##############################################################################################################################################################
 

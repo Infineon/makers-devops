@@ -178,7 +178,7 @@ class Monitor:
             print(f'\nFailed to read Unity output ! {"Start" if not start_found else "End"} token not found !\nMake sure to have set the correct port and baudrate.\n')
 
 
-        return( 1 if (len(summary) == 3 and int(summary[1]) > 0) or (len(summary) != 3) or not start_found or not end_found else 0 )
+        return( 1 if (len(summary) == 3 and int(summary[1]) > 0) or (len(summary) != 3) or (int(summary[0]) == 0) or not start_found or not end_found else 0 )
 
 
 
