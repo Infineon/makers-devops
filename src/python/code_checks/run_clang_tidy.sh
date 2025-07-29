@@ -27,7 +27,7 @@ fi
 eval set -- "$TEMP"
 
 checks=
-config_file="--config-file=extras/makers-devops/configs/clang-tidy/.clang-tidy"
+config_file="--config-file=extras/makers-devops/config/clang-tidy/.clang-tidy"
 excludes=
 export_fixes=
 extra_arg=
@@ -46,7 +46,7 @@ warnings_as_errors=
 
 while true; do
   case "$1" in
-         --checks )              checks="--check=$2";                           shift 2 ;;
+         --checks )              checks="--checks=$2";                          shift 2 ;;
          --config-file )         config_file="--config-file=$2";                shift 2 ;;
          --export-fixes )        export_fixes="--export-fixes=$2";              shift 2 ;;
          --extra-arg )           extra_arg+=" --extra-arg=$2";                  shift 2 ;;
@@ -104,18 +104,19 @@ echo ""
 fileReturnValue=0
 returnValue=0
 
-
 for pattern in $*; do
+    shopt -s extglob
     file_list=`find $pattern -regextype egrep -regex '.*\.(c|cpp|h|hpp)'`
+    shopt -u extglob
 
     for file in $file_list; do
         file_base=`basename $file`
 
-        $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors $file -- $excludes $includes 2>&1 | tee $output_dir/$file_prefix.$file_base.log
+        $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors "$file" -- $excludes $includes 2>&1 | tee "$output_dir/$file_prefix.$file_base.log"
 
         fileReturnValue=${PIPESTATUS[0]}
 
-        echo "" | tee -a $output_dir/$file_prefix.$file_base.log
+        echo "" | tee -a "$output_dir/$file_prefix.$file_base.log"
 
         if [ $fileReturnValue != 0 ]; then
             returnValue=2

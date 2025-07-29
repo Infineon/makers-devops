@@ -36,21 +36,15 @@ jobs:
       options: --cpus 1
 
     steps:
-      - name: Checkout repository 
+      - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: true
 
-      - name: Checkout makers-devops
-        uses: actions/checkout@v4
-        with:
-          repository: Infineon/makers-devops
-          path: extras/makers-devops
-
-      - name: Set strategy matrix
+      - name: Set strategy matrix (get all hil checks)
         id: set-matrix
         run: |
-          eval $(python3 extras/makers-devops/tools/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --getAllHILChecks)
+          eval $(python3 extras/makers-devops/src/python/code_checks/codeChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --getAllHILChecks)
 
       - name: Append HIL Checks Output to Summary
         run: |
@@ -74,14 +68,14 @@ jobs:
         checks: ${{ fromJson(needs.setup.outputs.checks) }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (recursive submodules)
         uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-tags: true
           fetch-depth: 0
 
-      - name: Run all HIL checks
+      - name: Run code check (${{ matrix.checks }})
         id: run_build
         run: |
           echo "Workflow has these parameters :"
@@ -90,14 +84,14 @@ jobs:
 
           hilChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} --dockerTag=latest  2>&1 | tee output.log
 
-      - name: Archive HIL check reports
+      - name: Archive code check reports
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.checks }}
           path: _results
 
-      - name: Append Code Checks Output to Summary
+      - name: Append code checks output to summary
         if: success() || failure()
         run: |
           echo "<details>" >> $GITHUB_STEP_SUMMARY
