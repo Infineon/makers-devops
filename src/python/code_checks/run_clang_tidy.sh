@@ -114,8 +114,6 @@ for pattern in $*; do
 
         $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors "$file" -- $excludes $includes 2>&1 | tee "$output_dir/$file_prefix.$file_base.log"
 
-        file_base=$(basename "$file")
-        $unbuffer clang-tidy $checks $config_file $export_fixes $extra_arg $fix $header_filter $quiet $system_headers $use_color $warnings_as_errors "$file" -- $excludes $includes 2>&1 | tee "$output_dir/$file_prefix.$file_base.log"
         fileReturnValue=${PIPESTATUS[0]}
 
         echo "" | tee -a "$output_dir/$file_prefix.$file_base.log"
