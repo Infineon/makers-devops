@@ -88,7 +88,7 @@ jobs:
           echo "matrix.checks   : ${{ matrix.checks }}"
           echo ""
 
-          hilChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} --dockerTag=test  2>&1 | tee output.log
+          hilChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} --dockerTag=latest  2>&1 | tee output.log
 
       - name: Archive HIL check reports
         if: success() || failure()

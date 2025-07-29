@@ -162,33 +162,44 @@ if __name__ == "__main__":
     )
 
     if args.runAllCodeChecks or args.runCheck:
-        if "options" in projectYAML:
-            options =  projectYAML["options"]
+        , , , useCoreName, useCoreUrl = evalOptionsRecord(projectYAML, dict())
 
-            if "USE_CORE" in options:
-                useCore = options["USE_CORE"]
+        returnCode |= subprocess.run([
+                                        "extras/makers-devops/bin/install_arduino_core.sh",
+                                        "-c", useCoreName,
+                                        "-u", useCoreUrl,
+                                    ]).returncode
 
-                if "local" in useCore:
-                    returnCode |= subprocess.run(
-                        [
-                            "extras/makers-devops/bin/install_arduino_core.sh",
-                            "-c", "local"
-                        ]
-                    ).returncode
-                else:
-                    coreName = useCore["name"]
 
-                    if "url" not in useCore:
-                        print(f"When specifying a specific core an Url must also be specified !\n")
-                        exit(1)
-                    else:
-                        returnCode |= subprocess.run(
-                            [
-                                "extras/makers-devops/bin/install_arduino_core.sh",
-                                "-c", coreName,
-                                "-u", useCore["url"],
-                            ]
-                        ).returncode
+
+
+        # if "options" in projectYAML:
+        #     options =  projectYAML["options"]
+
+        #     if "USE_CORE" in options:
+        #         useCore = options["USE_CORE"]
+
+        #         if "local" in useCore.lower():
+        #             returnCode |= subprocess.run(
+        #                 [
+        #                     "extras/makers-devops/bin/install_arduino_core.sh",
+        #                     "-c", "local"
+        #                 ]
+        #             ).returncode
+        #         else:
+        #             coreName = useCore["name"]
+
+        #             if "url" not in useCore:
+        #                 print(f"When specifying a specific core an Url must also be specified !\n")
+        #                 exit(1)
+        #             else:
+        #                 returnCode |= subprocess.run(
+        #                     [
+        #                         "extras/makers-devops/bin/install_arduino_core.sh",
+        #                         "-c", coreName,
+        #                         "-u", useCore["url"],
+        #                     ]
+        #                 ).returncode
                     
 
 
