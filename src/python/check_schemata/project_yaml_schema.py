@@ -1,17 +1,15 @@
 from schema import And, Or, Use, Optional
 
 projectYAMLSchema = {
-    Optional("options"): Or( None,
-                             {
-                                Optional("SEND_JOB_START_TOKEN") : bool,
-                                Optional("PARSER_START_TOKEN") : str,
-                                Optional("PARSER_END_TOKEN") : str,
-                                Optional("USE_CORE") : { 
-                                                         "name": Or("local", str),
-                                                         Optional("url"): And(str, lambda url: 'http' in url, error='\nERROR: "USE_CORE -> url" must contain "http"'),
-                                                       },
-                             }
-                  )
+    Optional("options"): {
+                            Optional("SEND_JOB_START_TOKEN") : bool,
+                            Optional("PARSER_START_TOKEN") : str,
+                            Optional("PARSER_END_TOKEN") : str,
+                            Optional("USE_CORE") : {
+                                                      "name": Or("local", str),
+                                                      Optional("url"): And(str, lambda url: 'http' in url, error='\nERROR: "USE_CORE -> url" must contain "http"'),
+                                                   },
+                         },
 
 # 'primes': [And(Or(int, float), error='\nERROR: "primes must be int or float')],
     
@@ -38,7 +36,9 @@ projectYAMLSchema = {
                   "command": str,
                   "query": str,
                   "working_dir": str,
-                  Optional("options"): { str : str }
+                  Optional("options"): {
+                                          Optional("SEND_JOB_START_TOKEN") : bool,
+                                       }
              } ]
     },
 
@@ -48,11 +48,9 @@ projectYAMLSchema = {
                   "command": str,
                   "query": str,
                   "working_dir": str,
-                  Optional("options"): Or( None,
-                                           {
-                                             Optional("SEND_JOB_START_TOKEN") : bool,
-                                           }
-                  )
+                  Optional("options"): {
+                                          Optional("SEND_JOB_START_TOKEN") : bool,
+                                       }
              } ]
     },
 }

@@ -10,7 +10,7 @@ import os
 tools_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(1, tools_path + "/..")
 
-from project_yaml.readProjectYAML import readProjectYAML
+from project_yaml.readProjectYAML import readProjectYAML, evalOptionsRecord
 
 
 def parseArgs():
@@ -162,13 +162,15 @@ if __name__ == "__main__":
     )
 
     if args.runAllCodeChecks or args.runCheck:
-        , , , useCoreName, useCoreUrl = evalOptionsRecord(projectYAML, dict())
+        sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl = evalOptionsRecord(projectYAML, dict())
 
-        returnCode |= subprocess.run([
-                                        "extras/makers-devops/bin/install_arduino_core.sh",
-                                        "-c", useCoreName,
-                                        "-u", useCoreUrl,
-                                    ]).returncode
+        if useCoreName != None:
+            if useCoreName.lower() == "local":
+                returnCode |= subprocess.run([
+                                                "extras/makers-devops/bin/install_arduino_core.sh",
+                                                "-c", useCoreName,
+                                                "-u", useCoreUrl,
+                                            ]).returncode
 
 
 
