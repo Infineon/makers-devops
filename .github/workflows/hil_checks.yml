@@ -59,10 +59,12 @@ jobs:
       - self-hosted
       - X64
       - Linux
+      - PSOC6
     needs: setup
 
     strategy:
       fail-fast: false
+      max-parallel: 1
 
       matrix:
         checks: ${{ fromJson(needs.setup.outputs.checks) }}
@@ -71,7 +73,7 @@ jobs:
       - name: Checkout repository (recursive submodules)
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: true
           fetch-tags: true
           fetch-depth: 0
 
@@ -82,7 +84,7 @@ jobs:
           echo "matrix.checks   : ${{ matrix.checks }}"
           echo ""
 
-          hilChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} --dockerTag=latest  2>&1 | tee output.log
+          hilChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} --dockerTag=push  2>&1 | tee output.log
 
       - name: Archive HIL check reports
         if: success() || failure()
