@@ -39,7 +39,7 @@ def evalOptionsRecord(projectOptionsDict, localOptionsDict):
         parserEndToken = projectOptionsDict["PARSER_END_TOKEN"]
 
     if "USE_CORE" in projectOptionsDict:
-        useCore = options["USE_CORE"]
+        useCore = projectOptionsDict["USE_CORE"]
         useCoreName = useCore["name"].lower()
 
         if useCoreName.lower() == "local":
@@ -48,7 +48,7 @@ def evalOptionsRecord(projectOptionsDict, localOptionsDict):
             else:
                 print(f"""FATAL: Must specify option "USE_CORE" with suboption "url" when using core "local" in project YAML !""")
 
-    # print(f"sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {useCoreName}, {useCoreUrl}")
+    # print(f"evalOptionsRecord   sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {useCoreName}, {useCoreUrl}")
     return sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl
  
 
@@ -75,5 +75,7 @@ if __name__ == "__main__":
         "config/project.yml",
         "config/user.yml",
     )
+
+    evalOptionsRecord(projectYAML["options"], dict())
 
     exit(0)

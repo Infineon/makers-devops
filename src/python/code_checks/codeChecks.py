@@ -162,7 +162,8 @@ if __name__ == "__main__":
     )
 
     if args.runAllCodeChecks or args.runCheck:
-        sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl = evalOptionsRecord(projectYAML, dict())
+        sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl = evalOptionsRecord(projectYAML["options"] if "options" in projectYAML else dict(), dict())
+        print(f"codeChecks sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {useCoreName}, {useCoreUrl}")
 
         if useCoreName != None:
             if useCoreName.lower() == "local":

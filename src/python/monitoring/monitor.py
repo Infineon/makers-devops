@@ -151,6 +151,7 @@ class Monitor:
                 start token found (boolean) : Whether the start token has been found.
                 end token found (boolean)   : Whether the end token has been found.
         """
+        print(f"""Monitor params : start_token : {start_token}   end_token : {end_token} """)
         error_list, warn_list, summary, start_found, end_found = self.read_unity_serial(serial_object, baudrate, runtime, start_token, end_token, error_token, warn_token, report_file)
 
         if start_found and end_found:

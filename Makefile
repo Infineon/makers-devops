@@ -19,9 +19,9 @@ REGISTRY=$(DOCKER_REGISTRY)
 
 # Here PWD is ./extras/makers-devops 
 # Therefore, we set myLocalWorkingDir to the root of the repository
-DOCKER=docker run --rm -it -v $(PWD)/../..:/myLocalWorkingDir:rw $(REGISTRY)
+DOCKER=docker run --rm -it -v $(PWD):/myLocalWorkingDir:rw $(REGISTRY)
 
-CODECHECK=extras/makers-devops/src/python/code_checks/codeChecks.py
+CODECHECK=src/python/code_checks/codeChecks.py
 MERGEXML=extras/makers-devops/src/python/code_checks/merge_clang_tidy_cppcheck.py
 PROJECTYAML=config/project.yml
 USERYAML=config/user.yml
