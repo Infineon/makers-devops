@@ -117,7 +117,10 @@ ssh "$remote_user_machine" <<EOF
   echo "Running hilChecks.py for each check..."
   echo "\$processed_checks" | while read -r check; do
       echo "Running hilChecks.py for check: \$check"
-      hilChecks.py --projectYAML "$project_yaml" --userYAML "$user_yaml" --runCheck "\$check" --dockerTag=latest 2>&1 | awk '/Error List/,/Switching off HIL devices/'
+      hilChecks.py --projectYAML "$project_yaml" --userYAML "$user_yaml" --runCheck "\$check" --dockerTag=latest 2>&1 | tee /tmp/hilChecks_output.log
+
+      # Extract and display the summary
+      awk '/Summary/,/Switching off HIL devices/' /tmp/hilChecks_output.log 
 
       if [ \$? -ne 0 ]; then
         echo "ERROR: hilChecks.py execution failed for check: \$check" >&2
