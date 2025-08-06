@@ -95,6 +95,29 @@ else
   }
 fi
 
+# Function to copy non-default YAML files to the remote default location
+# Arguments:
+#   $1 - Path to the YAML file provided by the user
+#   $2 - Default path where the YAML file should be copied on the remote
+#   $3 - Type of YAML file (e.g., "projectYAML" or "userYAML")
+copy_to_remote_default() {
+  local yaml_path=$1
+  local default_path=$2
+  local yaml_type=$3
+
+  if [ "$yaml_path" != "$default_path" ]; then
+    echo "WARNING: Non-default $yaml_type path provided. Copying to remote default location..."
+    scp "$yaml_path" "$remote_user_machine:$destination/$default_path" || {
+      echo "ERROR: Failed to copy $yaml_type to remote default location!" >&2
+      exit 1
+    }
+  fi
+}
+
+# Call the function for projectYAML and userYAML
+copy_to_remote_default "$project_yaml" "config/project.yml" "projectYAML"
+copy_to_remote_default "$user_yaml" "config/user.yml" "userYAML"
+
 echo "Switching to remote operations..."
 ssh "$remote_user_machine" <<EOF
   echo "Changing to destination directory: $destination"
@@ -115,18 +138,19 @@ ssh "$remote_user_machine" <<EOF
 
   processed_checks=\$(echo "\$matrix_checks" | sed 's/[][]//g' | tr -d '"' | tr ',' '\n')
   echo "Running hilChecks.py for each check..."
+  > /tmp/hilChecks_output.log
   echo "\$processed_checks" | while read -r check; do
       echo "Running hilChecks.py for check: \$check"
-      hilChecks.py --projectYAML "$project_yaml" --userYAML "$user_yaml" --runCheck "\$check" --dockerTag=latest 2>&1 | tee /tmp/hilChecks_output.log
-
-      # Extract and display the summary
-      awk '/Summary/,/Switching off HIL devices/' /tmp/hilChecks_output.log 
+      hilChecks.py --projectYAML "$project_yaml" --userYAML "$user_yaml" --runCheck "\$check" --dockerTag=latest 2>&1 | tee -a /tmp/hilChecks_output.log
 
       if [ \$? -ne 0 ]; then
         echo "ERROR: hilChecks.py execution failed for check: \$check" >&2
         exit 1
       fi
   done
+
+  echo "Extracting and calculating test results..."
+  awk -v matrix_checks="\$matrix_checks" '/[0-9]+ Tests [0-9]+ Failures [0-9]+ Ignored/ {total_tests += \$1; failed_tests += \$3; ignored_tests += \$5} END {print "Summary of "matrix_checks"\n#######\nTotal number of tests : ", total_tests, "\nTotal number of failed tests : ", failed_tests, "\nTotal number of ignored tests : ", ignored_tests}' /tmp/hilChecks_output.log
 EOF
 
 exit $?
