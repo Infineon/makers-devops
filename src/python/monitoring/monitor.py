@@ -96,8 +96,19 @@ class Monitor:
                     try:
                         line = serial_object.readline().decode().strip()
                         print(line)
-                    except:
+                    except ValueError as ve:
+                        print(line)
+                        print(f"FATAL: ValueError Could not read from serial !")
                         return errors, warnings, summary, start_found, end_found
+                    except SerialException as se:
+                        print(line)
+                        print(f"FATAL: SerialException Could not read from serial !")
+                        return errors, warnings, summary, start_found, end_found
+                    except:
+                        print(line)
+                        print(f"FATAL: Some other exception  Could not read from serial !   {sys.exc_info()[0]}")
+                        return errors, warnings, summary, start_found, end_found
+                    
                     
                     if re.search(start_token, line, re.IGNORECASE) and not end_found:
                         start_found = True
@@ -118,8 +129,18 @@ class Monitor:
                         if summary_pattern.search(line):
                             summary = number_pattern.findall(line)
 
+        except FileNotFoundError:
+            print(line)
+            print(f"FATAL: FileNotFoundError Could not open file '{report_file}' !")
+        except PermissionError:
+            print(line)
+            print(f"FATAL: PermissionError Could not open file '{report_file}' !")
+        except OSError:
+            print(line)
+            print(f"FATAL: OSError  Could not open file '{report_file}' !")
         except:
-            pass
+            print(line)
+            print(f"FATAL: Some other exception  Could not open file '{report_file}' !  {sys.exc_info()[0]}")
 
         
         return errors, warnings, summary, start_found, end_found
