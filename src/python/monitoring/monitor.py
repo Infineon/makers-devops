@@ -93,20 +93,26 @@ class Monitor:
         try:
             with open(report_file, 'w') as filehandle:
                 while (time.time() < end_time) and not (start_found and end_found):
+                    print("Monitor looping {time.time()} ?<=?  {end_time}")
+                    sys.stdout.flush()
                     try:
                         line = serial_object.readline().decode().strip()
                         print(line)
+                        sys.stdout.flush()
                     except ValueError as ve:
                         print(line)
                         print(f"FATAL: ValueError Could not read from serial !")
+                        sys.stdout.flush()
                         return errors, warnings, summary, start_found, end_found
                     except SerialException as se:
                         print(line)
                         print(f"FATAL: SerialException Could not read from serial !")
+                        sys.stdout.flush()
                         return errors, warnings, summary, start_found, end_found
                     except:
                         print(line)
                         print(f"FATAL: Some other exception  Could not read from serial !   {sys.exc_info()[0]}")
+                        sys.stdout.flush()
                         return errors, warnings, summary, start_found, end_found
                     
                     
@@ -132,15 +138,19 @@ class Monitor:
         except FileNotFoundError:
             print(line)
             print(f"FATAL: FileNotFoundError Could not open file '{report_file}' !")
+            sys.stdout.flush()
         except PermissionError:
             print(line)
             print(f"FATAL: PermissionError Could not open file '{report_file}' !")
+            sys.stdout.flush()
         except OSError:
             print(line)
             print(f"FATAL: OSError  Could not open file '{report_file}' !")
+            sys.stdout.flush()
         except:
             print(line)
             print(f"FATAL: Some other exception  Could not open file '{report_file}' !  {sys.exc_info()[0]}")
+            sys.stdout.flush()
 
         
         return errors, warnings, summary, start_found, end_found
