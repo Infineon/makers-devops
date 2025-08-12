@@ -12,7 +12,7 @@ usage() {
   echo "Notes:" 1>&2
   echo "  - All paths (source, destination) must be absolute paths." 1>&2
   echo "  - Remote user and machine must be in the format 'user@machine'." 1>&2
-  exit 1
+  exit 0
 }
 
 # Default values for optional parameters
@@ -79,7 +79,7 @@ if [ "$skip_copy" = false ]; then
   }
 
   cd $PARENT_DIR_SOURCE
-  tar -czf - -C "$PARENT_DIR_SOURCE" "$BASE_NAME_SOURCE" | ssh "$remote_user_machine" "tar -xpzf - -C $PARENT_DIR_DEST --checkpoint=1000 --checkpoint-action=dot" || {
+  tar -czf - -C "$PARENT_DIR_SOURCE" "$BASE_NAME_SOURCE" | ssh "$remote_user_machine" "tar -xzf - -C $PARENT_DIR_DEST --checkpoint=1000 --checkpoint-action=dot" || {
     echo "Failed to copy folder to remote destination!" >&2
     exit 1
   }
@@ -127,7 +127,6 @@ ssh "$remote_user_machine" <<EOF
   raw_output=\$(python3 extras/makers-devops/src/python/code_checks/codeChecks.py --projectYAML "$project_yaml" --userYAML "$user_yaml" --getAllHILChecks)
   matrix_checks=\$(echo "\$raw_output" |  sed -n 's/^echo "checks=\(.*\)" >>.*$/\1/p' | sed 's/\\"/"/g' | tr -d '\\')
 
-
   if [ \$? -ne 0 ]; then
     echo "ERROR: Failed to fetch HIL checks!" >&2
     exit 1
@@ -138,10 +137,12 @@ ssh "$remote_user_machine" <<EOF
 
   processed_checks=\$(echo "\$matrix_checks" | sed 's/[][]//g' | tr -d '"' | tr ',' '\n')
   echo "Running hilChecks.py for each check..."
-  > /tmp/hilChecks_output.log
+  output_log=\$(mktemp "hilChecks_output.XXXXXX.log")
+
+  > "\$output_log"
   echo "\$processed_checks" | while read -r check; do
       echo "Running hilChecks.py for check: \$check"
-      hilChecks.py --projectYAML "$project_yaml" --userYAML "$user_yaml" --runCheck "\$check" --dockerTag=latest 2>&1 | tee -a /tmp/hilChecks_output.log
+      hilChecks.py --projectYAML "$project_yaml" --userYAML "$user_yaml" --runCheck "\$check" --dockerTag=latest 2>&1 | tee -a "\$output_log"
 
       if [ \$? -ne 0 ]; then
         echo "ERROR: hilChecks.py execution failed for check: \$check" >&2
@@ -150,7 +151,32 @@ ssh "$remote_user_machine" <<EOF
   done
 
   echo "Extracting and calculating test results..."
-  awk -v matrix_checks="\$matrix_checks" '/[0-9]+ Tests [0-9]+ Failures [0-9]+ Ignored/ {total_tests += \$1; failed_tests += \$3; ignored_tests += \$5} END {print "Summary of "matrix_checks"\n#######\nTotal number of tests : ", total_tests, "\nTotal number of failed tests : ", failed_tests, "\nTotal number of ignored tests : ", ignored_tests}' /tmp/hilChecks_output.log
+  awk -v matrix_checks="\$matrix_checks" '
+  /^response/ { next }
+    /^===== Check:/ {
+        print "\n" \$0
+        next
+    }
+    /^Unity test run/ || /^TEST\\(/ || (/Tests [0-9]+ Failures [0-9]+ Ignored/ ) || /^OK$/ || /^FAIL$/ {
+      print
+    }
+    /[0-9]+ Tests [0-9]+ Failures [0-9]+ Ignored/{
+        total_tests += \$1
+        failed_tests += \$3
+        ignored_tests += \$5
+    }
+    END {
+        print "=============================="
+        print "      Test Summary Report     "
+        print "=============================="
+        print "Matrix Checks: " matrix_checks
+        print "------------------------------"
+        print "Total number of tests   : " total_tests
+        print "Total number of failed  : " failed_tests
+        print "Total number of ignored : " ignored_tests
+        print "=============================="
+    }' "\$output_log"
+  echo "[INFO] Output log stored at: \$output_log"
 EOF
 
 exit $?
