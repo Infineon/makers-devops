@@ -93,11 +93,20 @@ class Monitor:
         try:
             with open(report_file, 'w') as filehandle:
                 while (time.time() < end_time) and not (start_found and end_found):
-                    print("Monitor looping {time.time()} ?<=?  {end_time}")
+                    print(f"Monitor looping {time.time()} ?<=?  {end_time}")
                     sys.stdout.flush()
                     try:
-                        line = serial_object.readline().decode().strip()
-                        print(line)
+                        # line = serial_object.readline().decode().strip()
+                        line = serial_object.readline()
+                        print(f"1 line : {line}")
+                        sys.stdout.flush()
+
+                        line = line.decode()
+                        print(f"2 line : {line}")
+                        sys.stdout.flush()
+
+                        line = line.strip()
+                        print(f"3 line : {line}")
                         sys.stdout.flush()
                     except ValueError as ve:
                         print(line)
