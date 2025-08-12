@@ -89,13 +89,13 @@ class Monitor:
         errors      = []
         warnings    = []
         summary     = []
-        
+        print(f"monitor  start_time : {start_time}   end_time : {end_time}")
         try:
             with open(report_file, 'w') as filehandle:
                 while (time.time() < end_time) and not (start_found and end_found):
                     try:
                         line = serial_object.readline().decode().strip()
-                        # print(line)
+                        print(line)
                     except:
                         return errors, warnings, summary, start_found, end_found
                     
