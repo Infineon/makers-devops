@@ -57,20 +57,23 @@ jobs:
   codeChecks:
     runs-on: ubuntu-24.04
     needs: setup
+    
     container:
       image: docker.io/ifxmakers/makers-docker:latest
       volumes:
         - .:/myLocalWorkingDir:rw
       options: --cpus 1
+
     strategy:
       fail-fast: false
       matrix:
         checks: ${{ fromJson(needs.setup.outputs.checks) }}
+
     steps:
       - name: Checkout repository (recursive submodules)
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: true
           fetch-tags: true
           fetch-depth: 0
 
