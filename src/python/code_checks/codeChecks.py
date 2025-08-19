@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-# python3 codeChecks.py
 
 import argparse
 import subprocess
@@ -27,10 +26,6 @@ def parseArgs():
     parser.add_argument(
         "--runAllCodeChecks", action="store_true", help="Run all code checks."
     )
-
-    # parser.add_argument(
-    #     "--runAllHILChecks", action="store_true", help="Run all HIL checks."
-    # )
     
     parser.add_argument("--runCheck", type=str, help="Run a specific check.")
    
@@ -97,13 +92,6 @@ def runCheck(projectYAML, checkType=None, check=None, checkIndex=0):
 
 
     elif checkType == "code-quality":
-        # if "command" not in projectYAML[checkType][check]:
-        #     print(
-        #         f"ERROR : Option 'command' not found in project YAML for {checkType} / {check} !"
-        #     )
-        #     returnCode = 1
-
-        # else:
         paramList = projectYAML[checkType][check]["command"].split()
         paramList.insert(1, f"--file-prefix={check}")
         currentReturnCode |= subprocess.run(paramList).returncode
@@ -162,8 +150,8 @@ if __name__ == "__main__":
     )
 
     if args.runAllCodeChecks or args.runCheck:
-        sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl = evalOptionsRecord(projectYAML["options"] if "options" in projectYAML else dict(), dict())
-        print(f"codeChecks sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {useCoreName}, {useCoreUrl}")
+        sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl = evalOptionsRecord(projectYAML["options"] if "options" in projectYAML else dict(), dict())
+        print(f"DEBUG: codeChecks sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {runtime}, {useCoreName}, {useCoreUrl}")
 
         if useCoreName != None:
             if useCoreName.lower() == "local":
@@ -172,39 +160,6 @@ if __name__ == "__main__":
                                                 "-c", useCoreName,
                                                 "-u", useCoreUrl,
                                             ]).returncode
-
-
-
-
-        # if "options" in projectYAML:
-        #     options =  projectYAML["options"]
-
-        #     if "USE_CORE" in options:
-        #         useCore = options["USE_CORE"]
-
-        #         if "local" in useCore.lower():
-        #             returnCode |= subprocess.run(
-        #                 [
-        #                     "extras/makers-devops/bin/install_arduino_core.sh",
-        #                     "-c", "local"
-        #                 ]
-        #             ).returncode
-        #         else:
-        #             coreName = useCore["name"]
-
-        #             if "url" not in useCore:
-        #                 print(f"When specifying a specific core an Url must also be specified !\n")
-        #                 exit(1)
-        #             else:
-        #                 returnCode |= subprocess.run(
-        #                     [
-        #                         "extras/makers-devops/bin/install_arduino_core.sh",
-        #                         "-c", coreName,
-        #                         "-u", useCore["url"],
-        #                     ]
-        #                 ).returncode
-                    
-
 
 
     if args.runAllCodeChecks:
@@ -222,22 +177,6 @@ if __name__ == "__main__":
                         returnCode = 1
                     else:
                         returnCode |= runCheck(projectYAML, checkType, check)
-
-    # if args.runAllHILChecks:
-    #     for checkType, checkTypeList in userYAML.items():
-    #         if checkType not in projectYAML:
-    #             print(f"ERROR : Check type '{checkType}' not found in project YAML !")
-    #             returnCode = 1
-
-    #         elif checkType in ['example-test', 'unit-test']:
-    #             for check in checkTypeList:
-    #                 if check not in projectYAML[checkType]:
-    #                     print(
-    #                         f"ERROR : Check '{check}' not found in project YAML for check type '{checkType}' !"
-    #                     )
-    #                     returnCode = 1
-    #                 else:
-    #                     returnCode |= runCheck(projectYAML, checkType, check)
 
     elif args.runCheck:
         check = args.runCheck

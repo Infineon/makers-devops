@@ -5,6 +5,7 @@ projectYAMLSchema = {
                             Optional("SEND_JOB_START_TOKEN") : bool,
                             Optional("PARSER_START_TOKEN") : str,
                             Optional("PARSER_END_TOKEN") : str,
+                            Optional("RUNTIME") : int,
                             Optional("USE_CORE") : {
                                                       "name": Or("local", str),
                                                       Optional("url"): And(str, lambda url: 'http' in url, error='\nERROR: "USE_CORE -> url" must contain "http"'),
@@ -37,6 +38,7 @@ projectYAMLSchema = {
                   "query": str,
                   "working_dir": str,
                   Optional("options"): {
+                                          Optional("RUNTIME") : int,
                                           Optional("SEND_JOB_START_TOKEN") : bool,
                                        }
              } ]
@@ -49,6 +51,7 @@ projectYAMLSchema = {
                   "query": str,
                   "working_dir": str,
                   Optional("options"): {
+                                          Optional("RUNTIME") : int,
                                           Optional("SEND_JOB_START_TOKEN") : bool,
                                        }
              } ]

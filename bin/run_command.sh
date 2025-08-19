@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+echo ""
 echo "executing $0 $* ..."
 
 
@@ -50,11 +51,11 @@ if [ -z "$workingDir" ]; then
 fi
 
 
-echo ""
-echo "command     : $command"
-echo "cwd         : $cwd"
-echo "working_dir : $workingDir"
-echo ""
+# echo ""
+# echo "command     : $command"
+# echo "cwd         : $cwd"
+# echo "working_dir : $workingDir"
+# echo ""
 
 cd $workingDir
 

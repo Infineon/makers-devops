@@ -20,23 +20,33 @@ def evalOptionsRecord(projectOptionsDict, localOptionsDict):
     sendJobStartToken = True
     parserStartToken  = None
     parserEndToken    = None
+    runtime           = None
     useCoreName       = None
     useCoreUrl        = "dummy"
 
-    # print(f"projectOptionsDict : {projectOptionsDict}")
-    # print(f"localOptionsDict : {localOptionsDict}")
+    # print(f"DEBUG: projectOptionsDict : {projectOptionsDict}")
+    # print(f"DEBUG: localOptionsDict : {localOptionsDict}")
 
-    if "SEND_JOB_START_TOKEN" in projectOptionsDict:
-        sendJobStartToken = projectOptionsDict["SEND_JOB_START_TOKEN"]
 
     if "SEND_JOB_START_TOKEN" in localOptionsDict:
         sendJobStartToken = localOptionsDict["SEND_JOB_START_TOKEN"]
+    elif "SEND_JOB_START_TOKEN" in projectOptionsDict:
+        sendJobStartToken = projectOptionsDict["SEND_JOB_START_TOKEN"]
+
 
     if "PARSER_START_TOKEN" in projectOptionsDict:
         parserStartToken = projectOptionsDict["PARSER_START_TOKEN"]
 
+
     if "PARSER_END_TOKEN" in projectOptionsDict:
         parserEndToken = projectOptionsDict["PARSER_END_TOKEN"]
+
+
+    if "RUNTIME" in localOptionsDict:
+        runtime = localOptionsDict["RUNTIME"]
+    elif "RUNTIME" in projectOptionsDict:
+        runtime = projectOptionsDict["RUNTIME"]
+
 
     if "USE_CORE" in projectOptionsDict:
         useCore = projectOptionsDict["USE_CORE"]
@@ -48,8 +58,8 @@ def evalOptionsRecord(projectOptionsDict, localOptionsDict):
             else:
                 print(f"""FATAL: Must specify option "USE_CORE" with suboption "url" when using core "local" in project YAML !""")
 
-    # print(f"evalOptionsRecord   sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {useCoreName}, {useCoreUrl}")
-    return sendJobStartToken, parserStartToken, parserEndToken, useCoreName, useCoreUrl
+    # print(f"DEBUG: evalOptionsRecord   sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {runtime}, {useCoreName}, {useCoreUrl}")
+    return sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl
  
 
 def readProjectYAML(project, user):

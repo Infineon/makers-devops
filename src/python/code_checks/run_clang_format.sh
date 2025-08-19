@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+echo ""
 echo "executing $0 $* ..."
 
 
@@ -96,8 +97,8 @@ for pattern in $*; do
     for file in $file_list; do
         file_base=`basename $file`
 
-        # echo "$unbuffer clang-format $dry_run $edit_in_place $fcolor_diagnostics $files $output_replacements_xml $sort_includes $style $verbose $wno_error $werror $file 2>&1 | tee $output_dir/$file_prefix.$file_base.log"
         # new option in v21.x : --fail-on-incomplete-format 
+        # echo "executing $unbuffer clang-format $dry_run $edit_in_place $fcolor_diagnostics $files $output_replacements_xml $sort_includes $style $verbose $wno_error $werror $file 2>&1 | tee $output_dir/$file_prefix.$file_base.log ..."
         $unbuffer clang-format $dry_run $edit_in_place $fcolor_diagnostics $files $output_replacements_xml $sort_includes $style $verbose $wno_error $werror $file 2>&1 | tee $output_dir/$file_prefix.$file_base.log
 
         fileReturnValue=${PIPESTATUS[0]}
