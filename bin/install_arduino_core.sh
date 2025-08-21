@@ -80,6 +80,5 @@ arduino-cli core update-index
 arduino-cli board list
 
 
-echo "returnValue : $returnValue"
-echo "$0 done."
+echo "$0 done returning $returnValue."
 exit $returnValue

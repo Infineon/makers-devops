@@ -67,6 +67,8 @@ def runCheck(projectYAML, checkType=None, check=None, checkIndex=0):
         print(f"ERROR : Check 'None' is not valid !")
         returnCode = 1
 
+    sys.stdout.flush()
+
     elif checkType == "compile":
         for fqbn in projectYAML[checkType][check]['fqbns']:
             currentReturnCode |= subprocess.run(
@@ -138,6 +140,7 @@ def runCheck(projectYAML, checkType=None, check=None, checkIndex=0):
     if returnCode != 0:
         print(f"ERROR : Some check(s) failed, please check logfile !")
  
+    sys.stdout.flush()
     return returnCode
 
 
