@@ -58,7 +58,8 @@ def runCheck(projectYAML, checkType=None, check=None, checkIndex=0):
     currentReturnCode = 0
     failedJobs = []
     passedJobs = []
-    
+    sys.stdout.flush()
+
     if checkType is None:
         print(f"ERROR : Check type 'None' is not valid !")
         returnCode = 1
@@ -66,8 +67,6 @@ def runCheck(projectYAML, checkType=None, check=None, checkIndex=0):
     elif check is None:
         print(f"ERROR : Check 'None' is not valid !")
         returnCode = 1
-
-    sys.stdout.flush()
 
     elif checkType == "compile":
         for fqbn in projectYAML[checkType][check]['fqbns']:

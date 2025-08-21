@@ -33,6 +33,7 @@ pull-container:
 	
 run-container-check-all: pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllCodeChecks
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllHILChecks
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runAllCodeChecks
 
 run-container-source-cppcheck: pull-container
