@@ -91,8 +91,6 @@ class Monitor:
         try:
             with open(report_file, 'w') as filehandle:
                 while (time.time() < end_time) and not (start_found and end_found):
-                    print(f"Monitor looping {time.time()} ?<=?  {end_time}")
-                    sys.stdout.flush()
                     try:
                         line = serial_object.readline().decode().strip()
                         # print(f"""DEBUG: {line}""", flush = True)
