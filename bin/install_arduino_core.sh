@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+echo ""
 echo "executing $0 $* ..."
 
 
@@ -28,7 +29,6 @@ core=
 cwd=`pwd`
 local=
 url=
-# workingDir=
 
 while true; do
   case "$1" in
@@ -40,11 +40,11 @@ while true; do
 done
 
 
-echo ""
-echo "core        : $core"
-echo "cwd         : $cwd"
-echo "url         : $url"
-echo ""
+# echo ""
+# echo "core        : $core"
+# echo "cwd         : $cwd"
+# echo "url         : $url"
+# echo ""
 
 
 returnValue=0

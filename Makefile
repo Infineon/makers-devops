@@ -32,8 +32,8 @@ pull-container:
 # 	find ./src/python/code_checks/ -name "*.sh" -exec chmod +x {} \;
 	
 run-container-check-all: pull-container
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllChecks
-	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runAllChecks
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --getAllCodeChecks
+	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runAllCodeChecks
 
 run-container-source-cppcheck: pull-container
 	$(DOCKER) python3 $(CODECHECK) --projectYAML $(PROJECTYAML) --userYAML $(USERYAML) --runCheck source-code-quality-cppcheck 

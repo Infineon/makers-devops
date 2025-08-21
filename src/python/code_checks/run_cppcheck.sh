@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+echo ""
 echo "executing $0 ..."
 
 

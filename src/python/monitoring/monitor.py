@@ -9,7 +9,6 @@ import sys
 import time
 import yaml
 
-# from enum import IntEnum
 from serial.tools.list_ports import comports
 from serial.tools import list_ports_linux
 
@@ -51,7 +50,6 @@ class Monitor:
     """
 
 
-    # def read_unity_serial(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "^TEST\(", end_token = "^OK|^FAIL",
     def read_unity_serial(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "Unity test run", end_token = "^OK|^FAIL",
                           error_token = "ERROR ", warn_token = "WARN ", report_file = "unity.log"):
         """
@@ -89,40 +87,25 @@ class Monitor:
         errors      = []
         warnings    = []
         summary     = []
-        print(f"monitor  start_time : {start_time}   end_time : {end_time}")
+
         try:
             with open(report_file, 'w') as filehandle:
                 while (time.time() < end_time) and not (start_found and end_found):
-                    print(f"Monitor looping {time.time()} ?<=?  {end_time}")
-                    sys.stdout.flush()
                     try:
-                        # line = serial_object.readline().decode().strip()
-                        line = serial_object.readline()
-                        print(f"1 line : {line}")
-                        sys.stdout.flush()
-
-                        line = line.decode()
-                        print(f"2 line : {line}")
-                        sys.stdout.flush()
-
-                        line = line.strip()
-                        print(f"3 line : {line}")
-                        sys.stdout.flush()
+                        line = serial_object.readline().decode().strip()
+                        # print(f"""DEBUG: {line}""", flush = True)
                     except ValueError as ve:
                         print(line)
-                        print(f"FATAL: ValueError Could not read from serial !")
-                        sys.stdout.flush()
-                        return errors, warnings, summary, start_found, end_found
+                        print(f"FATAL: ValueError : Could not read from serial !")
+                        return 1, warnings, summary, start_found, end_found
                     except SerialException as se:
                         print(line)
-                        print(f"FATAL: SerialException Could not read from serial !")
-                        sys.stdout.flush()
-                        return errors, warnings, summary, start_found, end_found
+                        print(f"FATAL: SerialException : Could not read from serial !")
+                        return 1, warnings, summary, start_found, end_found
                     except:
                         print(line)
-                        print(f"FATAL: Some other exception  Could not read from serial !   {sys.exc_info()[0]}")
-                        sys.stdout.flush()
-                        return errors, warnings, summary, start_found, end_found
+                        print(f"FATAL: Some unexpected exception occurred ! => {sys.exc_info()[0]}")
+                        return 1, warnings, summary, start_found, end_found
                     
                     
                     if re.search(start_token, line, re.IGNORECASE) and not end_found:
@@ -146,26 +129,25 @@ class Monitor:
 
         except FileNotFoundError:
             print(line)
-            print(f"FATAL: FileNotFoundError Could not open file '{report_file}' !")
-            sys.stdout.flush()
+            print(f"FATAL: FileNotFoundError : Could not open file '{report_file}' !")
+            return 1, warnings, summary, start_found, end_found
         except PermissionError:
             print(line)
-            print(f"FATAL: PermissionError Could not open file '{report_file}' !")
-            sys.stdout.flush()
+            print(f"FATAL: PermissionError : Could not open file '{report_file}' !")
+            return 1, warnings, summary, start_found, end_found
         except OSError:
             print(line)
-            print(f"FATAL: OSError  Could not open file '{report_file}' !")
-            sys.stdout.flush()
+            print(f"FATAL: OSError : Could not open file '{report_file}' !")
+            return 1, warnings, summary, start_found, end_found
         except:
             print(line)
-            print(f"FATAL: Some other exception  Could not open file '{report_file}' !  {sys.exc_info()[0]}")
-            sys.stdout.flush()
+            print(f"FATAL: Some unexpected exception occurred ! => {sys.exc_info()[0]}")
+            return 1, warnings, summary, start_found, end_found
 
         
         return errors, warnings, summary, start_found, end_found
 
 
-    # def parseUnityOutput(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "^TEST\(", end_token = "^OK|^FAIL",
     def parseUnityOutput(self, serial_object = None, baudrate = 115200, runtime = 30, start_token = "Unity test run", end_token = "^OK|^FAIL",
                          error_token = "ERROR ", warn_token = "WARN ", report_file = "unity.log"):
         """
@@ -191,7 +173,7 @@ class Monitor:
                 start token found (boolean) : Whether the start token has been found.
                 end token found (boolean)   : Whether the end token has been found.
         """
-        print(f"""Monitor params : start_token : {start_token}   end_token : {end_token} """)
+        # print(f"""DEBUG: Monitor params : start_token : {start_token}   end_token : {end_token} """)
         error_list, warn_list, summary, start_found, end_found = self.read_unity_serial(serial_object, baudrate, runtime, start_token, end_token, error_token, warn_token, report_file)
 
         if start_found and end_found:
@@ -263,9 +245,9 @@ class Monitor:
                 while (time.time() < end_time) and not (start_found and end_found):
                     try:
                         line = serial_object.readline().decode().strip()
-                        # print(line, flush = True)
+                        # print(f"""DEBUG: {line}""", flush = True)
                     except:
-                        return errors, warnings, summary, start_found, end_found
+                        return 1, warnings, summary, start_found, end_found
                     
                     if re.search(start_token, line, re.IGNORECASE) and not end_found:
                         start_found = True
@@ -341,5 +323,4 @@ class Monitor:
             print(f'\nFailed to read example output ! {"Start" if not start_found else "End"} token not found !\nMake sure to have set the correct port and baudrate.\n')
 
 
-        # return( 1 if (len(summary) == 2 and int(summary[1]) > 0) or (len(summary) != 2) else 0 )
         return( 1 if (len(summary) == 2 and int(summary[1]) > 0) or (len(summary) != 2) or not start_found or not end_found else 0 )

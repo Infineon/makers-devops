@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+echo ""
 echo "executing $0 $* ..."
 
 
@@ -84,7 +85,7 @@ for pattern in $*; do
     for file in $file_list; do
         file_base=`basename $file`
 
-        echo "$unbuffer black $check $color $config $diff $quiet $verbose $file 2>&1 | tee $output_dir/$file_prefix.$file_base.log"
+        # echo "executing $unbuffer black $check $color $config $diff $quiet $verbose $file 2>&1 | tee $output_dir/$file_prefix.$file_base.log ..."
         $unbuffer black $check $color $config $diff $quiet $verbose $file 2>&1 | tee $output_dir/$file_prefix.$file_base.log
         
         fileReturnValue=${PIPESTATUS[0]}
