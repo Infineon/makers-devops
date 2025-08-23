@@ -53,6 +53,7 @@ projectYAMLSchema = {
                   Optional("options"): {
                                           Optional("RUNTIME") : int,
                                           Optional("SEND_JOB_START_TOKEN") : bool,
+                                          Optional("RUNTIME") : int,
                                        }
              } ]
     },
