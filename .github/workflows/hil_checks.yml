@@ -68,7 +68,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 3
 
       matrix:
         checks: ${{ fromJson(needs.setup.outputs.checks) }}

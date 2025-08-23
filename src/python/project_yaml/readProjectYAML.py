@@ -58,10 +58,7 @@ def evalOptionsRecord(projectOptionsDict, localOptionsDict):
             else:
                 print(f"""FATAL: Must specify option "USE_CORE" with suboption "url" when using core "local" in project YAML !""")
 
-    if "RUNTIME" in localOptionsDict:
-        runtime = localOptionsDict["RUNTIME"]
-
-    # print(f"evalOptionsRecord   sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {runtime}, {useCoreName}, {useCoreUrl}")
+    # print(f"DEBUG: evalOptionsRecord   sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {runtime}, {useCoreName}, {useCoreUrl}")
     return sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl
  
 
