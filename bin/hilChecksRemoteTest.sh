@@ -79,7 +79,7 @@ if [ "$skip_copy" = false ]; then
   }
 
   cd $PARENT_DIR_SOURCE
-  tar -chzf - -C "$PARENT_DIR_SOURCE" "$BASE_NAME_SOURCE" | ssh "$remote_user_machine" "tar --no-same-owner --no-same-permissions -xzf - -C $PARENT_DIR_DEST --checkpoint=1000 --checkpoint-action=dot" || {
+  tar -chzf - -C "$PARENT_DIR_SOURCE" --exclude=".git" "$BASE_NAME_SOURCE" | ssh "$remote_user_machine" "tar --no-same-owner --no-same-permissions -xzf - -C $PARENT_DIR_DEST --checkpoint=1000 --checkpoint-action=dot" || {
     echo "Failed to copy folder to remote destination!" >&2
     exit 1
   }
