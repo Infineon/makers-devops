@@ -39,6 +39,10 @@ projectYAMLSchema = {
                   "working_dir": str,
                   Optional("options"): {
                                           Optional("RUNTIME") : int,
+                                          Optional("USE_CORE") : {
+																	"name": Or("local", str),
+																	Optional("url"): And(str, lambda url: 'http' in url, error='\nERROR: "USE_CORE -> url" must contain "http"'),
+																},                                          
                                           Optional("SEND_JOB_START_TOKEN") : bool,
                                        }
              } ]
@@ -52,6 +56,10 @@ projectYAMLSchema = {
                   "working_dir": str,
                   Optional("options"): {
                                           Optional("RUNTIME") : int,
+                                          Optional("USE_CORE") : {
+																	"name": Or("local", str),
+																	Optional("url"): And(str, lambda url: 'http' in url, error='\nERROR: "USE_CORE -> url" must contain "http"'),
+																},                           
                                           Optional("SEND_JOB_START_TOKEN") : bool,
                                        }
              } ]
