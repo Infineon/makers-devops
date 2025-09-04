@@ -245,7 +245,7 @@ class Monitor:
                 while (time.time() < end_time) and not (start_found and end_found):
                     try:
                         line = serial_object.readline().decode().strip()
-                        # print(f"""DEBUG: {line}""", flush = True)
+                        print(f"""DEBUG: {line}""", flush = True)
                     except:
                         return 1, warnings, summary, start_found, end_found
                     
