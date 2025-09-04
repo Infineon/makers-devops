@@ -21,6 +21,7 @@ def evalOptionsRecord(projectOptionsDict, localOptionsDict):
     parserStartToken  = None
     parserEndToken    = None
     runtime           = None
+    useCore			  = None
     useCoreName       = None
     useCoreUrl        = "dummy"
 
@@ -47,18 +48,18 @@ def evalOptionsRecord(projectOptionsDict, localOptionsDict):
     elif "RUNTIME" in projectOptionsDict:
         runtime = projectOptionsDict["RUNTIME"]
 
-
-    if "USE_CORE" in projectOptionsDict:
+    if "USE_CORE" in localOptionsDict:
+        useCore = localOptionsDict["USE_CORE"]
+    elif "USE_CORE" in projectOptionsDict:
         useCore = projectOptionsDict["USE_CORE"]
-        useCoreName = useCore["name"].lower()
 
-        if useCoreName.lower() == "local":
+    if useCore!= None:
+        useCoreName = useCore["name"].lower()
+        if useCoreName != "local":
             if "url" in useCore:
                 useCoreUrl = useCore["url"]
             else:
-                print(f"""FATAL: Must specify option "USE_CORE" with suboption "url" when using core "local" in project YAML !""")
-
-    # print(f"DEBUG: evalOptionsRecord   sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {runtime}, {useCoreName}, {useCoreUrl}")
+                print(f"""FATAL: Must specify option "USE_CORE" with suboption "url" when using core "{useCoreName}" in project YAML !""")
     return sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl
  
 

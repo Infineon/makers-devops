@@ -189,6 +189,16 @@ if __name__ == "__main__":
             if check in checkTypeList:
                 type = checkType
                 break
+        
+        sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl = evalOptionsRecord(projectYAML["options"] if "options" in projectYAML else dict(), projectYAML[checkType][check][checkIndex]["options"] if "options" in projectYAML[checkType][check][checkIndex] else dict())
+        print(f"DEBUG: codeChecks sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {runtime}, {useCoreName}, {useCoreUrl}")
+
+        if useCoreName != None:
+            returnCode |= subprocess.run([
+                "extras/makers-devops/bin/install_arduino_core.sh",
+                "-c", useCoreName,
+                "-u", useCoreUrl,
+            ]).returncode
 
         returnCode |= runCheck(projectYAML, type, check, checkIndex)
 
