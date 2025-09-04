@@ -245,17 +245,14 @@ class Monitor:
                 while (time.time() < end_time) and not (start_found and end_found):
                     try:
                         line = serial_object.readline().decode().strip()
-                        print(f"""DEBUG: {line}""", flush = True)
+                        # print(f"""DEBUG: {line}""", flush = True)
                     except:
-                        print(f"""DEBUG: exiting read serial""", flush = True)
                         return 1, warnings, summary, start_found, end_found
                     
                     if re.search(start_token, line, re.IGNORECASE) and not end_found:
                         start_found = True
-                        print(f"""DEBUG: start_found""", flush = True)
 
                     if re.search(end_token, line, re.IGNORECASE) and start_found:
-                        print(f"""DEBUG: end_found""", flush = True)
                         end_found = True
 
                     if start_found:
@@ -267,16 +264,12 @@ class Monitor:
 
                         if warn_pattern.search(line):
                             warnings.append(line)
-                    else:
-                        print(f"""DEBUG: NOT start_found {line}""", flush = True)
-
 
         except:
-            print(f"""DEBUG: exiting open file""", flush = True)
             pass
 
         summary = [ len(errors), len(warnings) ]
-        print(f"""DEBUG: errors : {errors}   warn: {warnings}   summary: {summary}  {start_found}   {end_found}""", flush = True)
+        # print(f"""DEBUG: errors : {errors}   warn: {warnings}   summary: {summary}  start_found: {start_found}   end_found: {end_found}""", flush = True)
         return errors, warnings, summary, start_found, end_found
 
 
