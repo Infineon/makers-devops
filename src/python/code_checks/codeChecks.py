@@ -156,12 +156,11 @@ if __name__ == "__main__":
         print(f"DEBUG: codeChecks sendJobStartToken, parserStartToken, parserEndToken, runtime, useCoreName, useCoreUrl : {sendJobStartToken}, {parserStartToken}, {parserEndToken}, {runtime}, {useCoreName}, {useCoreUrl}")
 
         if useCoreName != None:
-            if useCoreName.lower() == "local":
-                returnCode |= subprocess.run([
-                                                "extras/makers-devops/bin/install_arduino_core.sh",
-                                                "-c", useCoreName,
-                                                "-u", useCoreUrl,
-                                            ]).returncode
+            returnCode |= subprocess.run([
+                                            "extras/makers-devops/bin/install_arduino_core.sh",
+                                            "-c", useCoreName,
+                                            "-u", useCoreUrl,
+                                        ]).returncode
 
 
     if args.runAllCodeChecks:
