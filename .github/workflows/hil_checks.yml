@@ -20,6 +20,10 @@ defaults:
   run:
     shell: bash
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # permissions:
 #   contents: write
     
@@ -89,13 +93,19 @@ jobs:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
 
       - name: Run HIL check (${{ matrix.checks }})
-        id: run_build
+        timeout-minutes: 10
         run: |
           echo "Workflow has these parameters :"
           echo "matrix.checks   : ${{ matrix.checks }}"
           echo ""
 
           hilChecks.py --projectYAML "${{ inputs.project-yaml }}" --userYAML "${{ inputs.user-yaml }}" --runCheck ${{ matrix.checks }} --dockerTag=latest  2>&1 | tee output.log
+
+      - name: Prepare HIL results for artifact upload
+        if: success() || failure()
+        run: |
+          mkdir -p _results
+          cp output.log _results/
 
       - name: Archive HIL check reports
         if: success() || failure()
@@ -107,6 +117,8 @@ jobs:
       - name: Append HIL checks output to summary
         if: success() || failure()
         run: |
-          echo "<details>" >> $GITHUB_STEP_SUMMARY
-          cat output.log >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "<test_results>" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          awk '/Unity test run 1 of 1/,/Number of ignored tests/' output.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</test_results>" >> $GITHUB_STEP_SUMMARY
