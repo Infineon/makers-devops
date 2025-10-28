@@ -61,14 +61,24 @@ jobs:
     outputs:
       checks: ${{ steps.set-matrix.outputs.checks }}
       decrypt-secrets: ${{ inputs.decrypt-secrets }}
-      
+
+  setupHilEnv:
+    runs-on:
+      - self-hosted
+      - X64
+      - Linux
+    needs: setup
+    steps:
+      - name: Setup makers-hil deploy environment
+        run: |
+          eval $(switch_makers_hil.sh deploy)
 
   hilChecks:
     runs-on:
       - self-hosted
       - X64
       - Linux
-    needs: setup
+    needs: [setup]
 
     strategy:
       fail-fast: false
@@ -91,10 +101,6 @@ jobs:
           ${{ needs.setup.outputs.decrypt-secrets }}
         env:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
-    
-      - name: Setup makers-hil deploy environment
-        run: |
-          switch_makers_hil.sh deploy
       
       - name: Run HIL check (${{ matrix.checks }})
         timeout-minutes: 10
