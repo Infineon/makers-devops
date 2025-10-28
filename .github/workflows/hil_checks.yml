@@ -49,10 +49,6 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup makers-hil deploy environment
-        run: |
-          switch_makers_hil.sh deploy
-
       - name: Set strategy matrix (get all hil checks)
         id: set-matrix
         run: |
@@ -95,7 +91,11 @@ jobs:
           ${{ needs.setup.outputs.decrypt-secrets }}
         env:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
-
+    
+      - name: Setup makers-hil deploy environment
+        run: |
+          switch_makers_hil.sh deploy
+      
       - name: Run HIL check (${{ matrix.checks }})
         timeout-minutes: 10
         run: |
