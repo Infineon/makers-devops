@@ -71,14 +71,14 @@ jobs:
     steps:
       - name: Setup makers-hil deploy environment
         run: |
-          eval $(switch_makers_hil.sh deploy)
+          switch_makers_hil.sh deploy
 
   hilChecks:
     runs-on:
       - self-hosted
       - X64
       - Linux
-    needs: [setup]
+    needs: [setup, setupHilEnv]
 
     strategy:
       fail-fast: false
