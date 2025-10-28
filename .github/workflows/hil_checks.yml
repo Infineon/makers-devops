@@ -49,6 +49,10 @@ jobs:
         with:
           submodules: true
 
+      - name: Setup makers-hil deploy environment
+        run: |
+          switch_makers_hil.sh deploy
+
       - name: Set strategy matrix (get all hil checks)
         id: set-matrix
         run: |
