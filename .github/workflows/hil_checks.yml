@@ -69,6 +69,7 @@ jobs:
       - Linux
       - makers
     needs: setup
+    if: ${{ always() }}
     steps:
       - name: Setup makers-hil deploy environment
         run: |
