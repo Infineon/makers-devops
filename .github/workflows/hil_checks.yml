@@ -73,6 +73,11 @@ jobs:
       - name: Setup makers-hil deploy environment
         run: |
           switch_makers_hil.sh deploy
+      
+      - name: Power on USB hubs for MUC runner
+        if: ${{ contains(runner.name, 'MUC') }}
+        run: |
+          switch_device.py --uhubctl-switch-all on
 
   hilChecks:
     runs-on:
@@ -103,7 +108,7 @@ jobs:
           ${{ needs.setup.outputs.decrypt-secrets }}
         env:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
-      
+
       - name: Run HIL check (${{ matrix.checks }})
         timeout-minutes: 10
         run: |
@@ -134,3 +139,16 @@ jobs:
           awk '/Unity test run 1 of 1/,/Number of ignored tests/' output.log >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</test_results>" >> $GITHUB_STEP_SUMMARY
+
+  teardownHilEnv:
+    runs-on:
+      - self-hosted
+      - X64
+      - Linux
+    needs: hilChecks
+    if: ${{ always() }}
+    steps:
+      - name: Power off USB hubs for MUC runner
+        if: ${{ contains(runner.name, 'MUC') }}
+        run: |
+          switch_device.py --uhubctl-switch-all off
