@@ -62,25 +62,13 @@ jobs:
       checks: ${{ steps.set-matrix.outputs.checks }}
       decrypt-secrets: ${{ inputs.decrypt-secrets }}
 
-  setupHilEnv:
-    runs-on:
-      - self-hosted
-      - X64
-      - Linux
-      - makers
-    needs: setup
-    steps:
-      - name: Setup makers-hil deploy environment
-        run: |
-          switch_makers_hil.sh deploy
-
   hilChecks:
     runs-on:
       - self-hosted
       - X64
       - Linux
       - makers
-    needs: [setup, setupHilEnv]
+    needs: setup
 
     strategy:
       fail-fast: false
@@ -90,6 +78,15 @@ jobs:
         checks: ${{ fromJson(needs.setup.outputs.checks) }}
 
     steps:
+      - name: Setup makers-hil deploy environment
+        run: |
+          switch_makers_hil.sh deploy
+
+      - name: Power on USB hubs for MUC runner
+        if: ${{ contains(runner.name, 'MUC') }}
+        run: |
+          switch_device.py --uhubctl-switch-all on
+
       - name: Checkout repository (recursive submodules)
         uses: actions/checkout@v4
         with:
@@ -103,7 +100,7 @@ jobs:
           ${{ needs.setup.outputs.decrypt-secrets }}
         env:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
-      
+
       - name: Run HIL check (${{ matrix.checks }})
         timeout-minutes: 10
         run: |
