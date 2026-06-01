@@ -62,31 +62,13 @@ jobs:
       checks: ${{ steps.set-matrix.outputs.checks }}
       decrypt-secrets: ${{ inputs.decrypt-secrets }}
 
-  setupHilEnv:
-    runs-on:
-      - self-hosted
-      - X64
-      - Linux
-      - makers
-    needs: setup
-    if: ${{ always() }}
-    steps:
-      - name: Setup makers-hil deploy environment
-        run: |
-          switch_makers_hil.sh deploy
-      
-      - name: Power on USB hubs for MUC runner
-        if: ${{ contains(runner.name, 'MUC') }}
-        run: |
-          switch_device.py --uhubctl-switch-all on
-
   hilChecks:
     runs-on:
       - self-hosted
       - X64
       - Linux
       - makers
-    needs: [setup, setupHilEnv]
+    needs: setup
 
     strategy:
       fail-fast: false
@@ -96,6 +78,15 @@ jobs:
         checks: ${{ fromJson(needs.setup.outputs.checks) }}
 
     steps:
+      - name: Setup makers-hil deploy environment
+        run: |
+          switch_makers_hil.sh deploy
+
+      - name: Power on USB hubs for MUC runner
+        if: ${{ contains(runner.name, 'MUC') }}
+        run: |
+          switch_device.py --uhubctl-switch-all on
+
       - name: Checkout repository (recursive submodules)
         uses: actions/checkout@v4
         with:
@@ -140,16 +131,3 @@ jobs:
           awk '/Unity test run 1 of 1/,/Number of ignored tests/' output.log >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</test_results>" >> $GITHUB_STEP_SUMMARY
-
-  teardownHilEnv:
-    runs-on:
-      - self-hosted
-      - X64
-      - Linux
-    needs: hilChecks
-    if: ${{ always() }}
-    steps:
-      - name: Power off USB hubs for MUC runner
-        if: ${{ contains(runner.name, 'MUC') }}
-        run: |
-          switch_device.py --uhubctl-switch-all off
